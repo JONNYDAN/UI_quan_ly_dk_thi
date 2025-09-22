@@ -60,6 +60,7 @@ export function NavDesktop({
           display: 'flex',
         },
         ...sx,
+        backgroundColor: 'background.paper',
       }}
     >
       <NavContent data={data} slots={slots} workspaces={workspaces} />

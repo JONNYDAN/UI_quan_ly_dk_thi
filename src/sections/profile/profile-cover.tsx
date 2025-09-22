@@ -31,7 +31,7 @@ export function ProfileCover({ coverUrl, isOwnProfile }: Props) {
             '&:hover': { bgcolor: 'grey.100' },
           }}
         >
-          <Iconify icon="carbon:chevron-sort" />
+          <Iconify icon="custom:menu-duotone" />
         </IconButton>
       )}
     </Box>

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import Avatar from '@mui/material/Avatar';
@@ -14,11 +15,13 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';
 
+import { CccdSection } from 'src/sections/profile/cccd-section';
+
 import { ProfileTabs } from '../profile-tabs';
-import { ProfileCover } from '../profile-cover';
 import { ProfileInfoItem } from '../profile-info-item';
 
 import type { IUserProfile } from '../profile-info-item';
+
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +30,7 @@ type Props = {
 };
 
 export function ProfileView({ user }: Props) {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('cccd');
 
   const handleTabChange = useCallback((newTab: string) => {
     setActiveTab(newTab);
@@ -36,29 +39,24 @@ export function ProfileView({ user }: Props) {
   return (
     <DashboardContent>
       <Container maxWidth="lg">
-        {/* Cover Section */}
-        <ProfileCover 
-          coverUrl={user.coverUrl} 
-          isOwnProfile
-        />
 
-        <Grid container spacing={4}>
+        <Grid container spacing={4} sx={{ mt: 3}}>
           {/* Sidebar Profile Card */}
           <Grid size={{ xs: 12, md: 4 }}>
-            <Card sx={{ position: 'relative', mt: -8 }}>
+            <Card sx={{ position: 'relative' }}>
               <Box
                 sx={{
                   display: 'flex',
                   justifyContent: 'center',
-                  mt: -6,
-                  mb: 2,
+                  mt: 2,
                 }}
               >
                 <Avatar
                   src={user.avatarUrl}
                   sx={{
                     width: 120,
-                    height: 120,
+                    height: 150,
+                    borderRadius: 2,
                     border: (theme) => `4px solid ${theme.palette.background.paper}`,
                   }}
                 >
@@ -66,22 +64,33 @@ export function ProfileView({ user }: Props) {
                 </Avatar>
               </Box>
 
-              <CardContent sx={{ textAlign: 'center', mt: 4 }}>
+                <CardContent sx={[
+                  (theme) => ({
+                    pl: 2,
+                    py: 1,
+                    gap: 2,
+                    pr: 1.5,
+                    borderRadius: 0.75,
+                    typography: 'body2',
+                    fontWeight: 'fontWeightMedium',
+                    color: theme.vars.palette.text.secondary,
+                    minHeight: 44,
+                    textAlign: 'center',
+                  }),
+                ]}>
                 <Typography variant="h5" gutterBottom>
                   {user.displayName}
                 </Typography>
 
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {user.title}
-                </Typography>
-
-                <Button
-                  variant="outlined"
-                  startIcon={<Iconify icon="solar:pen-bold" />}
-                  sx={{ mb: 3 }}
-                >
-                  Edit Profile
-                </Button>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Chip
+                    icon={<Iconify icon={user.verified ? "material-symbols:verified" : "material-symbols:warning" as any} />}
+                    label={user.verified ? "Đã xác thực" : "Chưa xác thực"}
+                    color={user.verified ? "success" : "warning"}
+                    variant="outlined"
+                    sx={{ px: 1, py: 0.5 }}
+                  />
+                </Box>
 
                 <Divider sx={{ my: 3 }} />
 
@@ -95,50 +104,33 @@ export function ProfileView({ user }: Props) {
                   
                   <ProfileInfoItem
                     icon="mingcute:phone-line"
-                    label="Phone"
+                    label="Điện thoại"
                     value={user.phone}
                   />
                   
                   <ProfileInfoItem
-                    icon="mingcute:location-line"
-                    label="Location"
+                    icon="mingcute:location-fill"
+                    label="Địa chỉ"
                     value={user.location}
                   />
                   
                   <ProfileInfoItem
                     icon="mingcute:calendar-line"
-                    label="Joined"
+                    label="Ngày tham gia"
                     value={user.joinDate}
                   />
                 </Box>
 
                 <Divider sx={{ my: 3 }} />
 
-                {/* Social Links */}
-                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                  {user.socialLinks?.linkedin && (
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      href={user.socialLinks.linkedin}
-                      target="_blank"
-                      startIcon={<Iconify icon="socials:linkedin" />}
-                    >
-                      LinkedIn
-                    </Button>
-                  )}
-                  
-                  {user.socialLinks?.github && (
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      href={user.socialLinks.github}
-                      target="_blank"
-                      startIcon={<Iconify icon="socials:github" />}
-                    >
-                      GitHub
-                    </Button>
-                  )}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {/* Verification Status */}
+                  <Button
+                    variant="outlined"
+                    startIcon={<Iconify icon="solar:pen-bold" />}
+                  >
+                    Cập nhật
+                  </Button>
                 </Box>
               </CardContent>
             </Card>
@@ -153,44 +145,21 @@ export function ProfileView({ user }: Props) {
                   activeTab={activeTab}
                   onTabChange={handleTabChange}
                   tabs={[
-                    { value: 'overview', label: 'Overview' },
-                    { value: 'experience', label: 'Experience' },
-                    { value: 'education', label: 'Education' },
-                    { value: 'skills', label: 'Skills' },
+                    { value: 'cccd', label: 'Chứng minh thư' },
+                    { value: 'education', label: 'Học vấn' },
+                    { value: 'experience', label: 'Lịch đăng ký' },
                   ]}
                 />
 
                 {/* Tab Content */}
-                {activeTab === 'overview' && (
-                  <Box sx={{ py: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                      About
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" paragraph>
-                      {user.bio || 'No bio available.'}
-                    </Typography>
-
-                    <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
-                      Basic Information
-                    </Typography>
-                    
-                    <Grid container spacing={2}>
-                      <Grid size={{ xs: 12, sm: 6 }}>
-                        <ProfileInfoItem
-                          icon="mingcute:briefcase-line"
-                          label="Current Position"
-                          value={user.currentPosition}
-                        />
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 6 }}>
-                        <ProfileInfoItem
-                          icon="mingcute:building-line"
-                          label="Company"
-                          value={user.company}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Box>
+                {activeTab === 'cccd' && (
+                  <CccdSection 
+                    user={user}
+                    onUpdateCccd={(side, imageUrl) => {
+                      // Xử lý cập nhật user state hoặc gọi API
+                      console.log(`Update ${side} with:`, imageUrl);
+                    }}
+                  />
                 )}
 
                 {activeTab === 'experience' && (
@@ -253,32 +222,6 @@ export function ProfileView({ user }: Props) {
                   </Box>
                 )}
 
-                {activeTab === 'skills' && (
-                  <Box sx={{ py: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                      Skills & Expertise
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {user.skills?.map((skill, index) => (
-                        <Button
-                          key={index}
-                          variant="outlined"
-                          size="small"
-                          color="primary"
-                        >
-                          {skill}
-                        </Button>
-                      ))}
-                    </Box>
-
-                    {(!user.skills || user.skills.length === 0) && (
-                      <Typography variant="body2" color="text.secondary">
-                        No skills added.
-                      </Typography>
-                    )}
-                  </Box>
-                )}
               </CardContent>
             </Card>
           </Grid>

@@ -11,7 +11,6 @@ const mockUser = {
   email: 'nguyenvana@example.com',
   avatarUrl: '/assets/images/avatar/avatar_1.jpg',
   coverUrl: '/assets/images/covers/cover_1.jpg',
-  title: 'Senior Frontend Developer',
   phone: '+84 123 456 789',
   location: 'Hồ Chí Minh, Vietnam',
   joinDate: 'Tham gia tháng 1, 2023',
@@ -44,7 +43,10 @@ const mockUser = {
   socialLinks: {
     linkedin: 'https://linkedin.com/in/nguyenvana',
     github: 'https://github.com/nguyenvana'
-  }
+  },
+  verified: false,
+  cccdFront: '/demo_cccd.jpg',
+  cccdBack: '/demo_cccd.jpg'
 };
 
 export default function Page() {

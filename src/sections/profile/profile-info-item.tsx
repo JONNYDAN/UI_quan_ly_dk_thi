@@ -41,12 +41,15 @@ export type IUserProfile = {
     github?: string;
     twitter?: string;
   };
+  verified?: boolean;
+  cccdFront?: string;
+  cccdBack?: string;
 }
 
 export function ProfileInfoItem({ icon, label, value }: Props) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-      <Iconify icon="carbon:chevron-sort" width={20} sx={{ mr: 2, color: 'text.secondary' }} />
+      <Iconify icon={icon as any} width={20} sx={{ mr: 2, color: 'text.secondary' }} />
       <Box>
         <Typography variant="caption" color="text.secondary">
           {label}
