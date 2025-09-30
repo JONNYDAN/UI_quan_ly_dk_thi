@@ -18,7 +18,7 @@ import { ProfileInfoItem } from './profile-info-item';
 
 // ----------------------------------------------------------------------
 
-interface CccdSectionProps {
+interface CccdSectionProps { 
   user: IUserProfile;
   onUpdateCccd: (side: 'front' | 'back', imageUrl: string) => void;
 }

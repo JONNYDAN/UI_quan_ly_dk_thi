@@ -7,8 +7,8 @@ import { varAlpha } from 'minimal-shared/utils';
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
-import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
+import { AuthLayout, BackgroundLayout } from 'src/layouts/auth';
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +20,8 @@ export const SignUpPage = lazy(() => import('src/pages/sign-up'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
+export const PortalPage = lazy(() => import('src/pages/portal'));
+
 
 const renderFallback = () => (
   <Box
@@ -51,7 +53,7 @@ export const routesSection: RouteObject[] = [
       </DashboardLayout>
     ),
     children: [
-      { index: true, element: <DashboardPage /> },
+      { path: 'dashboard', element: <DashboardPage /> },
       { path: 'user', element: <UserPage /> },
       { path: 'products', element: <ProductsPage /> },
       { path: 'blog', element: <BlogPage /> },
@@ -73,6 +75,14 @@ export const routesSection: RouteObject[] = [
         <SignUpPage />
       </AuthLayout>
     ),
+  },
+  {
+    path: '/',
+    element: (
+      <BackgroundLayout>
+        <PortalPage />
+      </BackgroundLayout>
+    )
   },
   {
     path: '404',
