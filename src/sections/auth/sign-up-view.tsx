@@ -80,6 +80,26 @@ export function SignUpView() {
         sx={{ mb: 3 }}
       />
 
+      <TextField
+        fullWidth
+        name="confirmPassword"
+        label="Xác nhận mật khẩu"
+        type={showPassword ? 'text' : 'password'}
+        slotProps={{
+          inputLabel: { shrink: true },
+          input: {
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                  <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          },
+        }}
+        sx={{ mb: 3 }}
+      />
+
       <Button
         fullWidth
         size="large"

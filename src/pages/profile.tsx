@@ -46,7 +46,7 @@ const mockUser = {
   },
   verified: false,
   cccdFront: '/demo_cccd.jpg',
-  cccdBack: '/demo_cccd.jpg'
+  cccdBack: '/cccdms.png'
 };
 
 export default function Page() {
