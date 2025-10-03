@@ -13,51 +13,64 @@ import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
 
-// ----------------------------------------------------------------------
+import { register } from '../../services/authService';
 
 export function SignUpView() {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
-  }, [router]);
+  // State cho form
+  const [formData, setFormData] = useState({
+    cccd: '',
+    email: '',
+    phone: '',
+    password: '',
+    password_confirmation: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const result = await register(formData);
+      console.log("Đăng ký thành công", result);
+      router.push('/'); // hoặc chuyển hướng sang trang đăng nhập
+    } catch (err) {
+      console.error("Lỗi đăng ký", err);
+    }
+  };
 
   const renderForm = (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'flex-end',
-        flexDirection: 'column',
-      }}
-    >
+    <Box sx={{ display: 'flex', alignItems: 'flex-end', flexDirection: 'column' }}>
       <TextField
         fullWidth
-        name="email"
+        name="cccd"
         label="CCCD/CMND"
+        value={formData.cccd}
+        onChange={handleChange}
         sx={{ mb: 3 }}
-        slotProps={{
-          inputLabel: { shrink: true },
-        }}
       />
       <TextField
         fullWidth
         name="email"
         label="Địa chỉ Email"
+        value={formData.email}
+        onChange={handleChange}
         sx={{ mb: 3 }}
-        slotProps={{
-          inputLabel: { shrink: true },
-        }}
       />
       <TextField
         fullWidth
-        name="email"
+        name="phone"
         label="Số điện thoại"
+        value={formData.phone}
+        onChange={handleChange}
         sx={{ mb: 3 }}
-        slotProps={{
-          inputLabel: { shrink: true },
-        }}
       />
 
       <TextField
@@ -65,28 +78,37 @@ export function SignUpView() {
         name="password"
         label="Mật khẩu"
         type={showPassword ? 'text' : 'password'}
-        slotProps={{
-          inputLabel: { shrink: true },
-          input: {
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          },
+        value={formData.password}
+        onChange={handleChange}
+        sx={{ mb: 3 }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+              </IconButton>
+            </InputAdornment>
+          ),
         }}
+      />
+
+      <TextField
+        fullWidth
+        name="password_confirmation"
+        label="Xác nhận mật khẩu"
+        type="password"
+        value={formData.password_confirmation}
+        onChange={handleChange}
         sx={{ mb: 3 }}
       />
 
       <Button
         fullWidth
         size="large"
-        type="submit"
+        type="button"
         color="inherit"
         variant="contained"
-        onClick={handleSignIn}
+        onClick={handleSubmit}
       >
         Đăng ký
       </Button>
@@ -105,7 +127,6 @@ export function SignUpView() {
         }}
       >
         <Typography variant="h5">Đăng ký</Typography>
-        
       </Box>
       {renderForm}
       <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
@@ -116,19 +137,8 @@ export function SignUpView() {
           HCMUE
         </Typography>
       </Divider>
-      <Box
-        sx={{
-          gap: 1,
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography
-          variant="body2"
-          sx={{
-            color: 'text.secondary',
-          }}
-        >
+      <Box sx={{ gap: 1, display: 'flex', justifyContent: 'center' }}>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           Bạn đã có tài khoản?
           <Link variant="subtitle2" sx={{ ml: 0.5 }} href="/sign-in">
             Tiến hành thôi !
