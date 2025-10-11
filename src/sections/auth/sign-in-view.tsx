@@ -11,18 +11,45 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { useAuth } from 'src/contexts/AuthContext';
+
 import { Iconify } from 'src/components/iconify';
+
+import { loginAPI } from '../../services/authService';
 
 // ----------------------------------------------------------------------
 
 export function SignInView() {
+  const { login } = useAuth();
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
-  }, [router]);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSignIn = async () => {
+    try {
+      const result = await loginAPI(formData);
+      console.log("Đăng nhập thành công", result);
+      
+      // Lưu thông tin user và token
+      login(result.user, result.authorization.token);
+      
+      router.push('/dashboard/');
+    } catch (err) {
+      console.error("Lỗi đăng nhập", err);
+    }
+  };
 
   const renderForm = (
     <Box
@@ -40,6 +67,8 @@ export function SignInView() {
         slotProps={{
           inputLabel: { shrink: true },
         }}
+        value={formData.email}
+        onChange={handleChange}
       />
 
       <Link variant="body2" color="inherit" sx={{ mb: 1.5 }}>
@@ -64,6 +93,8 @@ export function SignInView() {
           },
         }}
         sx={{ mb: 3 }}
+        value={formData.password}
+        onChange={handleChange}
       />
 
       <Button

@@ -8,6 +8,7 @@ import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 
 import { _langs, _notifications } from 'src/_mock';
+import { useAuth } from 'src/contexts/AuthContext';
 
 import { NavMobile, NavDesktop } from './nav';
 import { layoutClasses } from '../core/classes';
@@ -48,6 +49,7 @@ export function DashboardLayout({
   layoutQuery = 'lg',
 }: DashboardLayoutProps) {
   const theme = useTheme();
+  const { user } = useAuth(); 
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 
@@ -86,7 +88,7 @@ export function DashboardLayout({
           {/* <NotificationsPopover data={_notifications} /> */}
 
           {/** @slot Account drawer */}
-          <AccountPopover data={_account} user={null} />
+          <AccountPopover data={_account} user={user} />
         </Box>
       ),
     };

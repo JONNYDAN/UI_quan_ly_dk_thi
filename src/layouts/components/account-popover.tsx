@@ -15,6 +15,7 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 import { useRouter, usePathname } from 'src/routes/hooks';
 
 import { _myAccount } from 'src/_mock';
+import { useAuth } from 'src/contexts/AuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ export function AccountPopover({
   sx, ...other 
 }: AccountPopoverProps) {
   const router = useRouter();
+  const { logout } = useAuth();
 
   const pathname = usePathname();
 
@@ -62,6 +64,16 @@ export function AccountPopover({
   const handleSignIn = useCallback(() => {
     handleClosePopover();
     router.push('/sign-in'); // Điều hướng đến trang đăng nhập
+  }, [handleClosePopover, router]);
+
+  const handleLogout = useCallback(async () => {
+    handleClosePopover();
+    try {
+      await logout();
+      router.push('/sign-in'); // Điều hướng đến trang đăng nhập sau khi đăng xuất
+    } catch (error) {
+      console.error('Lỗi đăng xuất:', error);
+    }
   }, [handleClosePopover, router]);
 
   // Kiểm tra user có tồn tại không
@@ -152,7 +164,7 @@ export function AccountPopover({
             <Divider sx={{ borderStyle: 'dashed' }} />
 
             <Box sx={{ p: 1 }}>
-              <Button fullWidth color="error" size="medium" variant="text">
+              <Button fullWidth color="error" size="medium" variant="text" onClick={handleLogout}>
                 Logout
               </Button>
             </Box>

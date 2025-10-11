@@ -2,6 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router';
 
+import { AuthProvider } from 'src/contexts/AuthContext';
+
 import App from './app';
 import { routesSection } from './routes/sections';
 import { ErrorBoundary } from './routes/components';
@@ -11,9 +13,11 @@ import { ErrorBoundary } from './routes/components';
 const router = createBrowserRouter([
   {
     Component: () => (
-      <App>
-        <Outlet />
-      </App>
+      <AuthProvider> 
+        <App>
+          <Outlet />
+        </App>
+      </AuthProvider>
     ),
     errorElement: <ErrorBoundary />,
     children: routesSection,

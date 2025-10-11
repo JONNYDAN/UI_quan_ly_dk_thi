@@ -1,4 +1,3 @@
-import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -15,7 +14,7 @@ export type NavItem = {
 export const navData = [
   {
     title: 'Bảng điều khiển',
-    path: '/',
+    path: '/dashboard',
     icon: icon('ic-analytics'),
   },
   // {
@@ -36,7 +35,7 @@ export const navData = [
   {
     title: 'Lịch xét tuyển',
     path: '/blog',
-    icon: icon('ic-blog'),
+    icon: icon('ic--baseline-domain-verification'),
   },
   // {
   //   title: 'Sign in',
@@ -48,4 +47,19 @@ export const navData = [
   //   path: '/404',
   //   icon: icon('ic-disabled'),
   // },
+  {
+    title: ' Đăng ký thi ĐGNL',
+    path: '/register-dgnl',
+    icon: icon('ic--round-history-edu'),
+  },
+  {
+    title: 'Xét chứng chỉ ngoại ngữ',
+    path: '/xet-ccnn',
+    icon: icon('fluent--certificate-20-regular')
+  },
+  {
+    title: 'Lịch sử thanh toán',
+    path: '#',
+    icon: icon('ic--baseline-history'),
+  }
 ];

@@ -19,12 +19,9 @@ import { AnalyticsConversionRates } from '../analytics-conversion-rates';
 export function OverviewAnalyticsView() {
   return (
     <DashboardContent maxWidth="xl">
-      <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-        Chào mừng bạn đã đến 👋
-      </Typography>
 
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 5 }}>
           <AnalyticsWidgetSummary
             title="Weekly sales"
             percent={2.6}
@@ -37,7 +34,7 @@ export function OverviewAnalyticsView() {
           />
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 7 }}>
           <AnalyticsWidgetSummary
             title="New users"
             percent={-0.1}
@@ -51,7 +48,7 @@ export function OverviewAnalyticsView() {
           />
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        {/* <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <AnalyticsWidgetSummary
             title="Purchase orders"
             percent={2.8}
@@ -77,7 +74,7 @@ export function OverviewAnalyticsView() {
               series: [56, 30, 23, 54, 47, 40, 62, 73],
             }}
           />
-        </Grid>
+        </Grid> */}
 
         {/* <Grid size={{ xs: 12, md: 6, lg: 4 }}>
           <AnalyticsCurrentVisits
@@ -91,9 +88,9 @@ export function OverviewAnalyticsView() {
               ],
             }}
           />
-        </Grid>
+        </Grid> */}
 
-        <Grid size={{ xs: 12, md: 6, lg: 8 }}>
+        {/* <Grid size={{ xs: 12, md: 6, lg: 8 }}>
           <AnalyticsWebsiteVisits
             title="Website visits"
             subheader="(+43%) than last year"
@@ -105,9 +102,9 @@ export function OverviewAnalyticsView() {
               ],
             }}
           />
-        </Grid>
+        </Grid> */}
 
-        <Grid size={{ xs: 12, md: 6, lg: 8 }}>
+        {/* <Grid size={{ xs: 12, md: 6, lg: 8 }}>
           <AnalyticsConversionRates
             title="Conversion rates"
             subheader="(+43%) than last year"
@@ -119,9 +116,9 @@ export function OverviewAnalyticsView() {
               ],
             }}
           />
-        </Grid>
+        </Grid> */}
 
-        <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+        {/* <Grid size={{ xs: 12, md: 6, lg: 4 }}>
           <AnalyticsCurrentSubject
             title="Current subject"
             chart={{
@@ -133,21 +130,21 @@ export function OverviewAnalyticsView() {
               ],
             }}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid size={{ xs: 12, md: 6, lg: 8 }}>
           <AnalyticsNews title="News" list={_posts.slice(0, 5)} />
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+        {/* <Grid size={{ xs: 12, md: 6, lg: 4 }}>
           <AnalyticsOrderTimeline title="Order timeline" list={_timeline} />
-        </Grid>
+        </Grid> */}
 
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
           <AnalyticsTrafficBySite title="Traffic by site" list={_traffic} />
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6, lg: 8 }}>
+        {/* <Grid size={{ xs: 12, md: 6, lg: 8 }}>
           <AnalyticsTasks title="Tasks" list={_tasks} />
         </Grid> */}
       </Grid>

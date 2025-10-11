@@ -19,6 +19,7 @@ export function SignUpView() {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // State cho form
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ export function SignUpView() {
     try {
       const result = await register(formData);
       console.log("Đăng ký thành công", result);
-      router.push('/'); // hoặc chuyển hướng sang trang đăng nhập
+      router.push('/dashboard/');
     } catch (err) {
       console.error("Lỗi đăng ký", err);
     }
@@ -96,30 +97,19 @@ export function SignUpView() {
         fullWidth
         name="password_confirmation"
         label="Xác nhận mật khẩu"
-        type="password"
+        type={showConfirmPassword ? 'text' : 'password'}
         value={formData.password_confirmation}
         onChange={handleChange}
         sx={{ mb: 3 }}
-      />
-
-      <TextField
-        fullWidth
-        name="confirmPassword"
-        label="Xác nhận mật khẩu"
-        type={showPassword ? 'text' : 'password'}
-        slotProps={{
-          inputLabel: { shrink: true },
-          input: {
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          },
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end">
+                <Iconify icon={showConfirmPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+              </IconButton>
+            </InputAdornment>
+          ),
         }}
-        sx={{ mb: 3 }}
       />
 
       <Button
