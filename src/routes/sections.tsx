@@ -21,6 +21,8 @@ export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const PortalPage = lazy(() => import('src/pages/portal'));
+export const PhoneOtpPage = lazy(() => import('src/pages/phone-otp'));
+
 
 
 const renderFallback = () => (
@@ -73,6 +75,14 @@ export const routesSection: RouteObject[] = [
     element: (
       <AuthLayout>
         <SignUpPage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: 'phone-otp',
+    element: (
+      <AuthLayout>
+        <PhoneOtpPage />
       </AuthLayout>
     ),
   },

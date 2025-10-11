@@ -15,13 +15,13 @@ import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export function SignUpView() {
+export function PhoneOtpView() {
   const router = useRouter();
 
-  const [showPassword, setShowPassword] = useState(false);
+   const [otp, setOtp] = useState("");
 
-  const handleSignUp = useCallback(() => {
-    router.push('/phone-otp');
+  const handleVerifyOtp = useCallback(() => {
+    router.push('/');
   }, [router]);
 
   const renderForm = (
@@ -34,50 +34,14 @@ export function SignUpView() {
     >
       <TextField
         fullWidth
-        name="email"
-        label="CCCD/CMND"
+        name="otp"
+        label="Nhập mã OTP"
+        value={otp}
+        onChange={(e) => setOtp(e.target.value)}
         sx={{ mb: 3 }}
         slotProps={{
           inputLabel: { shrink: true },
         }}
-      />
-      <TextField
-        fullWidth
-        name="email"
-        label="Địa chỉ Email"
-        sx={{ mb: 3 }}
-        slotProps={{
-          inputLabel: { shrink: true },
-        }}
-      />
-      <TextField
-        fullWidth
-        name="email"
-        label="Số điện thoại"
-        sx={{ mb: 3 }}
-        slotProps={{
-          inputLabel: { shrink: true },
-        }}
-      />
-
-      <TextField
-        fullWidth
-        name="password"
-        label="Mật khẩu"
-        type={showPassword ? 'text' : 'password'}
-        slotProps={{
-          inputLabel: { shrink: true },
-          input: {
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          },
-        }}
-        sx={{ mb: 3 }}
       />
 
       <Button
@@ -86,9 +50,9 @@ export function SignUpView() {
         type="submit"
         color="inherit"
         variant="contained"
-        onClick={handleSignUp}
+        onClick={handleVerifyOtp}
       >
-        Đăng ký
+        Xác nhận OTP
       </Button>
     </Box>
   );
@@ -104,9 +68,9 @@ export function SignUpView() {
           mb: 5,
         }}
       >
-        <Typography variant="h5"><Link href="/phone-otp">Đăng ký</Link></Typography>
-        
+        <Typography variant="h5">Xác minh OTP</Typography>
       </Box>
+
       {renderForm}
       <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
         <Typography
@@ -129,9 +93,9 @@ export function SignUpView() {
             color: 'text.secondary',
           }}
         >
-          Bạn đã có tài khoản?
+          Bạn chưa nhận được OTP?
           <Link variant="subtitle2" sx={{ ml: 0.5 }} href="/sign-in">
-            Tiến hành thôi !
+            Gửi lại
           </Link>
         </Typography>
       </Box>

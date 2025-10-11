@@ -121,7 +121,7 @@ export const _boolean = (index: number) =>
 
 export const _postTitles = (index: number) =>
   [
-    'Whiteboard Templates By Industry Leaders',
+    '[QUAN TRỌNG] Thông báo thực hiện xét trợ cấp xã hội cho sinh viên hệ đào tạo chính quy học kỳ 2 năm học 2024 - 2025',
     'Tesla Cybertruck-inspired camper trailer for Tesla fans who can’t just wait for the truck!',
     'Designify Agency Landing Page Design',
     '✨What is Done is Done ✨',
