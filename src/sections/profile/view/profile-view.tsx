@@ -1,15 +1,22 @@
 import { useState, useCallback } from 'react';
 
-import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import CardContent from '@mui/material/CardContent';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Container,
+  Divider,
+  Grid,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+} from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
@@ -31,10 +38,34 @@ type Props = {
 
 export function ProfileView({ user }: Props) {
   const [activeTab, setActiveTab] = useState('cccd');
+  const [openEdit, setOpenEdit] = useState(false);
+  const [formData, setFormData] = useState({
+    displayName: user.displayName || '',
+    email: user.email || '',
+    phone: user.phone || '',
+    location: user.location || '',
+  });
 
   const handleTabChange = useCallback((newTab: string) => {
     setActiveTab(newTab);
   }, []);
+
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSave = () => {
+    console.log('Updated info:', formData);
+    // TODO: Gọi API cập nhật user tại đây
+    handleCloseEdit();
+  };
+
 
   return (
     <DashboardContent>
@@ -128,6 +159,7 @@ export function ProfileView({ user }: Props) {
                   <Button
                     variant="outlined"
                     startIcon={<Iconify icon="solar:pen-bold" />}
+                    onClick={handleOpenEdit}
                   >
                     Cập nhật
                   </Button>
@@ -227,6 +259,30 @@ export function ProfileView({ user }: Props) {
           </Grid>
         </Grid>
       </Container>
+
+      {/* Dialog Chỉnh sửa thông tin */}
+      <Dialog open={openEdit} onClose={handleCloseEdit} fullWidth maxWidth="sm" container={document.body}>
+        <DialogTitle>Cập nhật thông tin cá nhân</DialogTitle>
+        <DialogContent sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            label="Họ và tên"
+            name="displayName"
+            value={formData.displayName}
+            onChange={handleChange}
+            fullWidth
+            sx={{ mt: 2 }}
+          />
+          <TextField label="Email" name="email" value={formData.email} onChange={handleChange} fullWidth />
+          <TextField label="Điện thoại" name="phone" value={formData.phone} onChange={handleChange} fullWidth />
+          <TextField label="Địa chỉ" name="location" value={formData.location} onChange={handleChange} fullWidth />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEdit}>Hủy</Button>
+          <Button variant="contained" onClick={handleSave}>
+            Lưu thay đổi
+          </Button>
+        </DialogActions>
+      </Dialog>
     </DashboardContent>
   );
 }

@@ -22,6 +22,7 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const PortalPage = lazy(() => import('src/pages/portal'));
 export const PhoneOtpPage = lazy(() => import('src/pages/phone-otp'));
+export const RegisterDgnlPage = lazy(() => import('src/pages/register-dgnl'));
 
 
 
@@ -85,6 +86,14 @@ export const routesSection: RouteObject[] = [
         <PhoneOtpPage />
       </AuthLayout>
     ),
+  },
+  {
+    path: 'register-dgnl',
+    element: (
+      <DashboardLayout>
+        <RegisterDgnlPage />
+      </DashboardLayout>
+    )
   },
   {
     path: '/',

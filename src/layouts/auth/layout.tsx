@@ -155,7 +155,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <Link href="#" component={RouterLink} color="inherit" sx={{ typography: 'subtitle2' }}>
                   {/* Need help? */}
-                </Link>
+                </Link>  
               </Box>
             ),
           }}
