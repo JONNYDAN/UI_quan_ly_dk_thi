@@ -16,8 +16,7 @@ import { PortalContainer } from '../portal-container';
 
 export function PortalView() {
   const [open, setOpen] = useState(false);
-  const [selectedOption, setSelectedOption] =
-    useState<{ key: string; label: string } | null>(null);
+  const [selectedOption, setSelectedOption] = useState<{ key: string; label: string } | null>(null);
 
   const handleOpen = (option: { key: string; label: string }) => {
     setSelectedOption(option);
@@ -31,53 +30,51 @@ export function PortalView() {
   return (
     <PortalContainer>
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1, fontSize: 20, fontWeight: 500, }}>
+        <Box sx={{ flexGrow: 1, fontSize: 20, fontWeight: 500 }}>
           Cổng thông tin trường Đại học Sư phạm Thành phố Hồ Chí Minh
         </Box>
       </Box>
 
-        <Box
-          sx={{
-            display: 'grid',
-            rowGap: 3,
-           columnGap: 3.5,
-            
-            gridTemplateColumns: {
-            xs: 'repeat(1, 1fr)',    
-            sm: 'repeat(2, 1fr)',   
-            md: 'repeat(3, 1fr)',   
-          },
+      <Box
+        sx={{
+          display: 'grid',
+          rowGap: 3,
+          columnGap: 3.5,
 
-          }}
-        >
-          {OPTIONS.map((option) => (
-            <Box
-              key={option.key}
-             sx={{
-    cursor: 'pointer',
-    boxShadow: '0px 5px 10px rgba(0, 0, 0, 0.1)',
-    borderRadius: 2,
-    boxSizing: 'border-box',
-    bgcolor: 'background.paper',
-    border: '2px solid transparent',
-    transition: 'all 0.2s ease',
-    '&:hover': {
-      transform: 'translateY(-8px)',      
-      border: '2px solid #2196f3',
-      boxShadow: 6,
-    },
-    
-              }}
-              onClick={() => handleOpen(option)}
-            >
-              <CardPortal
-                icon={<img src={option.image} alt={option.label} />}
-                title={option.label}
-                topIcon={option.topIcon}
-              />
-            </Box>
-          ))}
-        </Box>
+          gridTemplateColumns: {
+            xs: 'repeat(1, 1fr)',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+          },
+        }}
+      >
+        {OPTIONS.map((option) => (
+          <Box
+            key={option.key}
+            sx={{
+              cursor: 'pointer',
+              boxShadow: '0px 5px 10px rgba(0, 0, 0, 0.1)',
+              borderRadius: 2,
+              boxSizing: 'border-box',
+              bgcolor: 'background.paper',
+              border: '2px solid transparent',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                transform: 'translateY(-8px)',
+                border: '2px solid #2196f3',
+                boxShadow: 6,
+              },
+            }}
+            onClick={() => handleOpen(option)}
+          >
+            <CardPortal
+              icon={<img src={option.image} alt={option.label} />}
+              title={option.label}
+              topIcon={option.topIcon}
+            />
+          </Box>
+        ))}
+      </Box>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>
