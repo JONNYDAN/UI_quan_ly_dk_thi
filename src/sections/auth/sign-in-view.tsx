@@ -428,24 +428,6 @@ export function SignInView() {
           <canvas ref={canvasRef} style={{ display: 'none' }} />
         </div>
 
-        {/* OCR Info Display */}
-        {ocrData && (
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            border: '1px solid #dee2e6',
-            borderRadius: '8px',
-            padding: '15px',
-            marginBottom: '20px',
-            textAlign: 'left'
-          }}>
-            <h6 style={{ color: '#124874', marginBottom: '10px' }}>Thông tin đọc được từ CCCD:</h6>
-            <p><strong>Số CCCD:</strong> {ocrData?.id || 'Không xác định'}</p>
-            <p><strong>Họ và tên:</strong> {ocrData?.full_name || ''}</p>
-            <p><strong>Ngày sinh:</strong> {ocrData?.date_of_birth || ''}</p>
-            <p><strong>Giới tính:</strong> {ocrData?.sex || ''}</p>
-          </div>
-        )}
-
         {/* Manual CCCD Input */}
         <TextField
           fullWidth
