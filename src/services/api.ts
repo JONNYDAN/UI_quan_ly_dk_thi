@@ -7,4 +7,16 @@ const api = axios.create({
   timeout: 10000,
 });
 
+// Attach Authorization header from AuthContext/localStorage automatically
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 export default api;

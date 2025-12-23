@@ -52,10 +52,25 @@ export const navData = [
     path: '/register-dgnl',
     icon: icon('ic--round-history-edu'),
   },
+  // {
+  //   title: 'Xét chứng chỉ ngoại ngữ',
+  //   path: '/xet-ccnn',
+  //   icon: icon('fluent--certificate-20-regular')
+  // },
   {
-    title: 'Xét chứng chỉ ngoại ngữ',
-    path: '/xet-ccnn',
-    icon: icon('fluent--certificate-20-regular')
+    title: 'Quản trị - Người dùng',
+    path: '/admin/users',
+    icon: icon('ic-user'),
+  },
+  {
+    title: 'Quản trị - Kỳ thi',
+    path: '/admin/exam-management',
+    icon: icon('ic-analytics'),
+  },
+  {
+    title: 'Quản trị - Thanh toán',
+    path: '/admin/exam-payments',
+    icon: icon('ic--baseline-history'),
   },
   {
     title: 'Lịch sử thanh toán',
