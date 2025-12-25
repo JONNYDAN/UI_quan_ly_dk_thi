@@ -25,6 +25,33 @@ export const PortalPage = lazy(() => import('src/pages/portal'));
 export const PhoneOtpPage = lazy(() => import('src/pages/phone-otp'));
 export const RegisterDgnlPage = lazy(() => import('src/pages/register-dgnl'));
 export const UpcomingExamsPage = lazy(() => import('src/pages/upcoming-exams'));
+export const HomePage = lazy(() => import('src/pages/home'));
+export const SearchPage = lazy(() => import('src/pages/search'));
+
+// Additional auth pages migrated from xettuyen
+export const LoginAdminPage = lazy(() => import('src/sections/auth/login-admin-view'));
+export const ComingSoonPage = lazy(() => import('src/sections/auth/coming-soon-view'));
+
+// Migrated pages from xettuyen2025_frontend
+export const BoardAdminPage = lazy(() => import('src/sections/admin/view/board-admin-view'));
+export const BoardModeratorPage = lazy(() => import('src/sections/admin/view/board-moderator-view'));
+export const BoardUserPage = lazy(() => import('src/sections/admin/view/board-user-view'));
+export const DashboardExamPage = lazy(() => import('src/sections/admin/view/dashboard-exam-view'));
+export const UserManagementPage = lazy(() => import('src/sections/admin/view/user-management-view'));
+export const ExamManagementPage = lazy(() => import('src/sections/admin/view/exam-management-view'));
+export const ExamTurnManagementPage = lazy(() => import('src/sections/admin/view/exam-turn-management-view'));
+export const ExamPayManagementPage = lazy(() => import('src/sections/admin/view/exam-pay-management-view'));
+
+export const PaymentDetailPage = lazy(() => import('src/sections/payment/view/payment-detail-view'));
+export const PaymentReturnPage = lazy(() => import('src/sections/payment/view/payment-return-view'));
+
+export const EnrollmentPage = lazy(() => import('src/sections/exam/view/enrollment-view'));
+export const EnrollmentNNPage = lazy(() => import('src/sections/exam/view/enrollment-nn-view'));
+export const ExamInfoPage = lazy(() => import('src/sections/exam/view/exam-info-view'));
+export const ExamPaperPage = lazy(() => import('src/sections/exam/view/exam-paper-view'));
+export const ExamResultPage = lazy(() => import('src/sections/exam/view/exam-result-view'));
+export const ReExamRegisterPage = lazy(() => import('src/sections/exam/view/reexam-register-view'));
+export const ReExamInfoPage = lazy(() => import('src/sections/exam/view/reexam-info-view'));
 
 
 const renderFallback = () => (
@@ -62,7 +89,31 @@ export const routesSection: RouteObject[] = [
       { path: 'products', element: <ProductsPage /> },
       { path: 'blog', element: <BlogPage /> },
       { path: 'profile', element: <ProfilePage /> },
-      { path: 'upcoming-exams', element: <UpcomingExamsPage /> }
+      { path: 'upcoming-exams', element: <UpcomingExamsPage /> },
+
+      // Admin pages (migrated)
+      { path: 'admin/board', element: <BoardAdminPage /> },
+      { path: 'admin/moderator', element: <BoardModeratorPage /> },
+      { path: 'admin/user', element: <BoardUserPage /> },
+      { path: 'admin/exams', element: <DashboardExamPage /> },
+      { path: 'admin/users', element: <UserManagementPage /> },
+      { path: 'admin/exam-management', element: <ExamManagementPage /> },
+      { path: 'admin/exam-turns', element: <ExamTurnManagementPage /> },
+      { path: 'admin/exam-payments', element: <ExamPayManagementPage /> },
+
+      // Payment pages
+      { path: 'payment/:orderCode', element: <PaymentDetailPage /> },
+      { path: 'payment-return', element: <PaymentReturnPage /> },
+
+      // Exam / Enrollment
+      { path: 'exam/enrollment', element: <EnrollmentPage /> },
+      { path: 'exam/enrollment-nn', element: <EnrollmentNNPage /> },
+      { path: 'exam/info', element: <ExamInfoPage /> },
+      { path: 'exam/paper', element: <ExamPaperPage /> },
+      { path: 'exam/results', element: <ExamResultPage /> },
+      { path: 'exam/re-register', element: <ReExamRegisterPage /> },
+      { path: 'exam/re-info', element: <ReExamInfoPage /> },
+
     ],
   },
   {
@@ -78,6 +129,14 @@ export const routesSection: RouteObject[] = [
     element: (
       <AuthLayout>
         <SignUpPage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: 'admin/sign-in',
+    element: (
+      <AuthLayout>
+        <LoginAdminPage />
       </AuthLayout>
     ),
   },
@@ -102,6 +161,30 @@ export const routesSection: RouteObject[] = [
     element: (
       <BackgroundLayout>
         <PortalPage />
+      </BackgroundLayout>
+    )
+  },
+  {
+    path: 'home',
+    element: (
+      <BackgroundLayout>
+        <HomePage />
+      </BackgroundLayout>
+    )
+  },
+  {
+    path: 'coming-soon',
+    element: (
+      <BackgroundLayout>
+        <ComingSoonPage />
+      </BackgroundLayout>
+    )
+  },
+  {
+    path: 'search',
+    element: (
+      <BackgroundLayout>
+        <SearchPage />
       </BackgroundLayout>
     )
   },

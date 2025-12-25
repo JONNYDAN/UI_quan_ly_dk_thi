@@ -226,7 +226,11 @@ export function SignInView() {
 
     try {
       setLoading(true);
-      const loginData: any = { password: formData.password };
+      setError('');
+      
+      const loginData: any = { 
+        password: formData.password 
+      };
       
       if (cccdImage) {
         loginData.cccd_image = cccdImage;
@@ -234,16 +238,53 @@ export function SignInView() {
         loginData.cccd = formData.cccd;
       }
 
+      console.log('Sending login data:', { ...loginData, cccd_image: cccdImage ? '[BASE64_IMAGE]' : null });
+
       const result = await loginAPI(loginData);
       console.log("Đăng nhập thành công", result);
       
-      // Lưu thông tin user và token
-      login(result.user, result.authorization.token);
+      // Kiểm tra cấu trúc response
+      if (!result) {
+        throw new Error('Không nhận được phản hồi từ server');
+      }
       
+      if (result.status !== 'success') {
+        throw new Error(result.message || 'Đăng nhập thất bại');
+      }
+      
+      if (!result.user || !result.tokens || !result.tokens.accessToken) {
+        throw new Error('Dữ liệu đăng nhập không hợp lệ');
+      }
+      
+      console.log('Login successful, user data:', result.user);
+      console.log('Tokens received:', result.tokens);
+      
+      // Lưu thông tin user và token với cấu trúc đúng
+      // result.tokens.accessToken thay vì result.authorization.token
+      login(result.user, result.tokens.accessToken);
+      
+      // Điều hướng đến dashboard
       router.push('/dashboard/');
+      
     } catch (err: any) {
-      setError(err.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
-      console.error("Lỗi đăng nhập", err);
+      console.error("Lỗi đăng nhập chi tiết:", err);
+      
+      // Xử lý các loại lỗi khác nhau
+      let errorMessage = 'Đăng nhập thất bại. Vui lòng thử lại.';
+      
+      if (err.response) {
+        // Lỗi từ server với status code
+        const serverError = err.response.data;
+        errorMessage = serverError.message || `Lỗi ${err.response.status}: ${serverError.error || 'Lỗi không xác định'}`;
+      } else if (err.request) {
+        // Không nhận được response
+        errorMessage = 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.';
+      } else if (err.message) {
+        // Lỗi từ code
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -427,24 +468,6 @@ export function SignInView() {
 
           <canvas ref={canvasRef} style={{ display: 'none' }} />
         </div>
-
-        {/* OCR Info Display */}
-        {ocrData && (
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            border: '1px solid #dee2e6',
-            borderRadius: '8px',
-            padding: '15px',
-            marginBottom: '20px',
-            textAlign: 'left'
-          }}>
-            <h6 style={{ color: '#124874', marginBottom: '10px' }}>Thông tin đọc được từ CCCD:</h6>
-            <p><strong>Số CCCD:</strong> {ocrData?.id || 'Không xác định'}</p>
-            <p><strong>Họ và tên:</strong> {ocrData?.full_name || ''}</p>
-            <p><strong>Ngày sinh:</strong> {ocrData?.date_of_birth || ''}</p>
-            <p><strong>Giới tính:</strong> {ocrData?.sex || ''}</p>
-          </div>
-        )}
 
         {/* Manual CCCD Input */}
         <TextField
