@@ -7,6 +7,7 @@ import { varAlpha } from 'minimal-shared/utils';
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
+// import ExamLayout from 'src/layouts/exam/layout';
 import { DashboardLayout } from 'src/layouts/dashboard';
 import { AuthLayout, BackgroundLayout } from 'src/layouts/auth';
 
@@ -23,7 +24,7 @@ export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const PortalPage = lazy(() => import('src/pages/portal'));
 export const PhoneOtpPage = lazy(() => import('src/pages/phone-otp'));
 export const RegisterDgnlPage = lazy(() => import('src/pages/register-dgnl'));
-
+export const UpcomingExamsPage = lazy(() => import('src/pages/upcoming-exams'));
 
 
 const renderFallback = () => (
@@ -61,6 +62,7 @@ export const routesSection: RouteObject[] = [
       { path: 'products', element: <ProductsPage /> },
       { path: 'blog', element: <BlogPage /> },
       { path: 'profile', element: <ProfilePage /> },
+      { path: 'upcoming-exams', element: <UpcomingExamsPage /> }
     ],
   },
   {
