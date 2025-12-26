@@ -1,6 +1,6 @@
 import type { IconButtonProps } from '@mui/material/IconButton';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -14,7 +14,6 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { useRouter, usePathname } from 'src/routes/hooks';
 
-import { _myAccount } from 'src/_mock';
 import { useAuth } from 'src/contexts/AuthContext';
 
 // ----------------------------------------------------------------------
@@ -27,23 +26,37 @@ export type AccountPopoverProps = IconButtonProps & {
     info?: React.ReactNode;
   }[];
   user?: {
-    displayName?: string;
+    fullname?: string;
     email?: string;
     photoURL?: string;
+    name?: string; // Thêm field name
+    cccd?: string;
+    phone?: string;
+    roles?: string[];
   } | null;
 };
 
 export function AccountPopover({ 
   data = [],
-  user = _myAccount, 
-  sx, ...other 
+  user, 
+  sx, 
+  ...other 
 }: AccountPopoverProps) {
+  const { user: authUser, logout, isAuthenticated } = useAuth(); // Lấy user từ context
   const router = useRouter();
-  const { logout } = useAuth();
-
   const pathname = usePathname();
 
+  // Ưu tiên sử dụng user từ props, nếu không có thì dùng từ auth context
+  const currentUser = user || authUser;
+
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
+
+  // Debug: log user data
+  useEffect(() => {
+    // console.log('AccountPopover - currentUser:', currentUser);
+    // console.log('AccountPopover - isAuthenticated:', isAuthenticated);
+    // console.log('AccountPopover - authUser from context:', authUser);
+  }, [currentUser, isAuthenticated, authUser]);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -77,7 +90,34 @@ export function AccountPopover({
   }, [handleClosePopover, router]);
 
   // Kiểm tra user có tồn tại không
-  const isUserAuthenticated = !!user;
+  const isUserAuthenticated = isAuthenticated && !!currentUser;
+
+  // Lấy chữ cái đầu của tên để hiển thị trên avatar
+  const getInitial = () => {
+    if (!currentUser?.fullname) return 'U';
+    
+    const name = currentUser.fullname|| '';
+    return name.charAt(0).toUpperCase();
+  };
+
+  // Lấy tên hiển thị
+  const getDisplayName = () => {
+    if (!currentUser) return 'Người dùng';
+    
+    if (currentUser.fullname) return currentUser.fullname;
+    
+    return 'Người dùng';
+  };
+
+  // Lấy email
+  const getEmail = () => {
+    if (!currentUser) return '';
+    
+    if (currentUser.email) return currentUser.email;
+    if (currentUser.cccd) return `CCCD: ${currentUser.cccd}`;
+    
+    return '';
+  };
 
   return (
     <>
@@ -94,11 +134,22 @@ export function AccountPopover({
         {...other}
       >
         {isUserAuthenticated ? (
-          <Avatar src={_myAccount.photoURL} alt={_myAccount.displayName} sx={{ width: 1, height: 1 }}>
-            {_myAccount.displayName.charAt(0).toUpperCase()}
+          <Avatar 
+            alt={getDisplayName()} 
+            sx={{ 
+              width: 1, 
+              height: 1,
+              bgcolor: 'primary.main'
+            }}
+          >
+            {getInitial()}
           </Avatar>
         ) : (
-          <Avatar sx={{ width: 1, height: 1 }} />
+          <Avatar sx={{ width: 1, height: 1, bgcolor: 'grey.400' }}>
+            <Typography variant="caption" sx={{ color: 'white' }}>
+              ?
+            </Typography>
+          </Avatar>
         )}
       </IconButton>
 
@@ -110,23 +161,48 @@ export function AccountPopover({
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         slotProps={{
           paper: {
-            sx: { width: 200 },
+            sx: { 
+              width: 280,
+              borderRadius: 1.5,
+              boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.15)'
+            },
           },
         }}
       >
         {isUserAuthenticated ? (
           <>
             <Box sx={{ p: 2, pb: 1.5 }}>
-              <Typography variant="subtitle2" noWrap>
-                {_myAccount?.displayName}
+              <Typography variant="subtitle1" noWrap fontWeight="bold">
+                {getDisplayName()}
               </Typography>
 
               <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-                {_myAccount?.email}
+                {getEmail()}
               </Typography>
+              
+              {/* Hiển thị roles nếu có */}
+              {currentUser?.roles && currentUser.roles.length > 0 && (
+                <Box sx={{ mt: 0.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {currentUser.roles.map((role, index) => (
+                    <Typography 
+                      key={index} 
+                      variant="caption" 
+                      sx={{ 
+                        px: 0.75, 
+                        py: 0.25, 
+                        borderRadius: 0.5,
+                        bgcolor: 'primary.light',
+                        color: 'primary.contrastText'
+                      }}
+                    >
+                      {role.replace('ROLE_', '')}
+                    </Typography>
+                  ))}
+                </Box>
+              )}
             </Box>
 
-            <Divider sx={{ borderStyle: 'dashed' }} />
+            <Divider sx={{ borderStyle: 'dashed', my: 0.5 }} />
 
             <MenuList
               disablePadding
@@ -140,7 +216,10 @@ export function AccountPopover({
                   gap: 2,
                   borderRadius: 0.75,
                   color: 'text.secondary',
-                  '&:hover': { color: 'text.primary' },
+                  '&:hover': { 
+                    color: 'text.primary',
+                    backgroundColor: 'action.hover'
+                  },
                   [`&.${menuItemClasses.selected}`]: {
                     color: 'text.primary',
                     bgcolor: 'action.selected',
@@ -161,21 +240,44 @@ export function AccountPopover({
               ))}
             </MenuList>
 
-            <Divider sx={{ borderStyle: 'dashed' }} />
+            <Divider sx={{ borderStyle: 'dashed', my: 0.5 }} />
 
-            <Box sx={{ p: 1 }}>
-              <Button fullWidth color="error" size="medium" variant="text" onClick={handleLogout}>
-                Logout
+            <Box sx={{ p: 1.5 }}>
+              <Button 
+                fullWidth 
+                color="error" 
+                size="medium" 
+                variant="outlined" 
+                onClick={handleLogout}
+                sx={{
+                  borderRadius: 1,
+                  fontWeight: 500
+                }}
+              >
+                Đăng xuất
               </Button>
             </Box>
           </>
         ) : (
           <Box sx={{ p: 2, pb: 1.5 }}>
-            <Typography variant="subtitle2" noWrap sx={{ mb: 1 }}>
+            <Typography variant="subtitle1" noWrap sx={{ mb: 1, fontWeight: 'bold' }}>
               Bạn chưa đăng nhập
             </Typography>
            
-            <Button fullWidth color="primary" variant="contained" onClick={handleSignIn}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+              Đăng nhập để sử dụng đầy đủ tính năng
+            </Typography>
+            
+            <Button 
+              fullWidth 
+              color="primary" 
+              variant="contained" 
+              onClick={handleSignIn}
+              sx={{
+                borderRadius: 1,
+                fontWeight: 500
+              }}
+            >
               Đăng nhập
             </Button>
           </Box>

@@ -4,9 +4,9 @@ import type { ReactNode } from 'react';
 export type PortalOption = {
   key:
     | 'admission'
-    | 'process'
-    | 'exam'
-    | 'career'
+    | 'hsca_info'
+    | 'account'
+    | 'hsca'
     | 'special'
     | 'certificate';
   label: string;
@@ -21,28 +21,28 @@ export const OPTIONS: PortalOption[] = [
     topIcon: <img src="/portal1_logo.png" alt="admission" width={70} height={70} />,
   },
   {
-    key: 'process',
-    label: 'QUY TRÌNH TUYỂN SINH',
+    key: 'hsca_info',
+    label: 'THÔNG TIN KỲ THI ĐGNL CHUYÊN BIỆT',
     topIcon: <img src="/portal2_logo.png" alt="admission" width={70} height={70} />,
   },
     {
-    key: 'exam',
-   label: 'XÉT ĐIỂM THI THPT',
+    key: 'account',
+   label: 'ĐĂNG KÝ TÀI KHOẢN',
     topIcon: <img src="/portal3_logo.png" alt="admission" width={70} height={70} />,
   },
   {
-    key: 'career',
-    label: 'HƯỚNG NGHIỆP',
+    key: 'hsca',
+    label: 'ĐĂNG KÝ DỰ THI ĐGNL CHUYÊN BIỆT',
     topIcon: <img src="/portal4_logo.png" alt="admission" width={70} height={70} />,
   },
-  {
-    key: 'special',
-    label: 'KỲ THI ĐGNL CHUYÊN BIỆT',
-    topIcon: <img src="/portal5_logo.png" alt="admission" width={70} height={70} />,
-  },
-   {
-    key: 'certificate',
-    label: 'CHỨNG CHỈ NGOẠI NGỮ',
-    topIcon: <img src="/portal6_logo.png" alt="admission" width={70} height={70} />,
-  },
+  // {
+  //   key: 'special',
+  //   label: 'ĐĂNG KÝ DỰ THI NĂNG KHIẾU',
+  //   topIcon: <img src="/portal5_logo.png" alt="admission" width={70} height={70} />,
+  // },
+  //  {
+  //   key: 'certificate',
+  //   label: 'ĐĂNG KÝ CHỨNG CHỈ NGOẠI NGỮ',
+  //   topIcon: <img src="/portal6_logo.png" alt="admission" width={70} height={70} />,
+  // },
 ];

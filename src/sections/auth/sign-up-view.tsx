@@ -21,6 +21,9 @@ import {
   Card,
   CardContent,
   Grid,
+  Tabs,
+  Tab,
+  Stack,
 } from '@mui/material';
 
 import { useRouter } from 'src/routes/hooks';
@@ -29,7 +32,13 @@ import { Iconify } from 'src/components/iconify';
 
 import { register, verifyCCCD } from '../../services/authService';
 
-const steps = ['Chụp ảnh CCCD', 'Nhập thông tin tài khoản'];
+const steps = ['Chụp/tải ảnh CCCD', 'Nhập thông tin tài khoản'];
+
+// Tab selection
+enum CaptureMode {
+  CAMERA = 'camera',
+  UPLOAD = 'upload'
+}
 
 export function SignUpView() {
   const router = useRouter();
@@ -44,10 +53,14 @@ export function SignUpView() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
+  const [captureMode, setCaptureMode] = useState<CaptureMode>(CaptureMode.CAMERA);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadPreview, setUploadPreview] = useState<string>('');
 
   // Camera refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [photoTaken, setPhotoTaken] = useState(false);
   const [cccdImage, setCccdImage] = useState<string>('');
@@ -75,9 +88,11 @@ export function SignUpView() {
   const [ocrData, setOcrData] = useState<any>(null);
   const [ocrExtracted, setOcrExtracted] = useState(false);
 
-  // Start camera on component mount
+  // Start camera on component mount if camera mode is selected
   useEffect(() => {
-    startCamera();
+    if (captureMode === CaptureMode.CAMERA) {
+      startCamera();
+    }
 
     // Clean up camera on unmount
     return () => {
@@ -88,11 +103,11 @@ export function SignUpView() {
         videoRef.current.srcObject = null;
       }
     };
-  }, []);
+  }, [captureMode]);
 
-  // Ensure video element gets the stream when available (fix race with conditional render)
+  // Ensure video element gets the stream when available
   useEffect(() => {
-    if (videoRef.current) {
+    if (captureMode === CaptureMode.CAMERA && videoRef.current) {
       if (stream) {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
@@ -103,14 +118,14 @@ export function SignUpView() {
         videoRef.current.srcObject = null;
       }
     }
-  }, [stream]);
+  }, [stream, captureMode]);
 
   const startCamera = async () => {
     try {
       setLoading(true);
       setError('');
 
-      // Stop any existing stream first (prevent stale tracks)
+      // Stop any existing stream first
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
         setStream(null);
@@ -130,12 +145,9 @@ export function SignUpView() {
         },
       });
 
-      // Save stream and let effect attach to the video element
       setStream(mediaStream);
-
       setCameraReady(true);
 
-      // Đảm bảo video bắt đầu chạy
       if (videoRef.current) {
         videoRef.current.onloadedmetadata = () => {
           videoRef.current?.play().catch(() => {});
@@ -204,8 +216,54 @@ export function SignUpView() {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Kiểm tra loại file
+    if (!file.type.match('image.*')) {
+      setError('Vui lòng chọn file ảnh (JPEG, PNG, etc.)');
+      return;
+    }
+
+    // Kiểm tra kích thước file (tối đa 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Kích thước file quá lớn. Vui lòng chọn file nhỏ hơn 5MB.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+      setCaptureAttempted(true);
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const imageData = event.target?.result as string;
+        
+        // Lưu file và preview
+        setUploadedFile(file);
+        setUploadPreview(imageData);
+        setCccdImage(imageData);
+        setPhotoTaken(true);
+
+        // Extract CCCD info
+        await extractCCCDInfo(imageData);
+      };
+      reader.onerror = () => {
+        setError('Lỗi khi đọc file. Vui lòng thử lại.');
+        setLoading(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setError('Lỗi khi xử lý file. Vui lòng thử lại.');
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
   const retakePhoto = async () => {
-    // Dừng stream camera hiện tại nếu có
+    // Reset all states
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
       setStream(null);
@@ -214,12 +272,15 @@ export function SignUpView() {
     
     setPhotoTaken(false);
     setCccdImage('');
+    setUploadedFile(null);
+    setUploadPreview('');
     setOcrData(null);
     setOcrExtracted(false);
     setConfirmedInfo(false);
     setCaptureAttempted(false);
-    setCameraReady(false); 
+    setCameraReady(false);
     
+    // Reset form data
     setFormData((prev) => ({
       ...prev,
       cccd: '',
@@ -231,10 +292,17 @@ export function SignUpView() {
       place_of_residence: '',
     }));
 
-    // Restart camera sau khi đã reset state
-    setTimeout(() => {
-      startCamera();
-    }, 100);
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+
+    // Restart camera if in camera mode
+    if (captureMode === CaptureMode.CAMERA) {
+      setTimeout(() => {
+        startCamera();
+      }, 100);
+    }
   };
 
   const extractCCCDInfo = async (imageBase64: string) => {
@@ -261,7 +329,7 @@ export function SignUpView() {
 
         setSuccess('Đã đọc thông tin CCCD thành công! Vui lòng kiểm tra thông tin bên dưới.');
       } else {
-        setError('Không thể đọc thông tin từ CCCD. Vui lòng chụp lại ảnh rõ hơn.');
+        setError('Không thể đọc thông tin từ CCCD. Vui lòng chụp/tải lại ảnh rõ hơn.');
         setOcrExtracted(false);
       }
     } catch (err: any) {
@@ -280,23 +348,45 @@ export function SignUpView() {
     }));
   };
 
+  const handleModeChange = (event: React.SyntheticEvent, newMode: CaptureMode) => {
+    setCaptureMode(newMode);
+    
+    // Reset camera if switching to upload mode
+    if (newMode === CaptureMode.UPLOAD && stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
+      setCameraReady(false);
+    }
+    
+    // Reset photo taken state
+    if (!photoTaken) {
+      setPhotoTaken(false);
+      setCccdImage('');
+      setUploadedFile(null);
+      setUploadPreview('');
+      setOcrData(null);
+      setOcrExtracted(false);
+      setConfirmedInfo(false);
+    }
+  };
+
   const handleNext = () => {
     if (activeStep === 0) {
       // Validate step 1
       if (!photoTaken) {
-        setError('Vui lòng chụp ảnh CCCD trước khi tiếp tục');
+        setError('Vui lòng chụp hoặc tải ảnh CCCD trước khi tiếp tục');
         return;
       }
       if (!ocrExtracted) {
-        setError('Không thể đọc thông tin từ ảnh CCCD. Vui lòng chụp lại.');
+        setError('Không thể đọc thông tin từ ảnh CCCD. Vui lòng thử lại với ảnh rõ hơn.');
         return;
       }
       if (!formData.cccd) {
-        setError('Không thể đọc số CCCD. Vui lòng chụp lại.');
+        setError('Không thể đọc số CCCD. Vui lòng thử lại với ảnh rõ hơn.');
         return;
       }
       if (!formData.full_name) {
-        setError('Không thể đọc họ tên. Vui lòng chụp lại.');
+        setError('Không thể đọc họ tên. Vui lòng thử lại với ảnh rõ hơn.');
         return;
       }
       if (!confirmedInfo) {
@@ -359,17 +449,17 @@ export function SignUpView() {
         phone: formData.phone,
         email: formData.email,
         password: formData.password,
-        acceptTerms: true, // Required by controller
-        cccd_image: cccdImage, // Will be processed separately
+        acceptTerms: true,
+        cccd_image: cccdImage,
       };
 
       const result = await register(registerData);
-      console.log('Đăng ký thành công', result);
+      // console.log('Đăng ký thành công', result);
 
       setSuccess('Đăng ký thành công! Đang chuyển hướng...');
 
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push('/sign-in');
       }, 2000);
     } catch (err: any) {
       setError(err.message || 'Đăng ký thất bại. Vui lòng thử lại.');
@@ -411,102 +501,143 @@ export function SignUpView() {
     }
   };
 
+  const renderCameraView = () => (
+    <>
+      <Button
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={capturePhoto}
+        disabled={!cameraReady || loading || photoTaken}
+        startIcon={<Iconify icon="material-symbols:camera" />}
+      >
+        Chụp ảnh CCCD
+      </Button>
+
+      {/* Camera Preview */}
+      {cameraReady && !photoTaken ? (
+        <Box sx={{ position: 'relative', display: 'inline-block', width: '100%', mt: 2 }}>
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            style={{
+              width: '100%',
+              maxWidth: '400px',
+              height: 'auto',
+              borderRadius: '8px',
+              backgroundColor: '#000',
+              display: 'block',
+              margin: '0 auto',
+            }}
+          />
+          {/* Guide frame */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '280px',
+              height: '180px',
+              maxWidth: '70%',
+              border: '2px dashed rgba(255, 255, 255, 0.7)',
+              borderRadius: '8px',
+              pointerEvents: 'none',
+            }}
+          />
+        </Box>
+      ) : null}
+    </>
+  );
+
+  const renderUploadView = () => (
+    <>
+      <Button
+        fullWidth
+        variant="contained"
+        color="primary"
+        component="label"
+        disabled={loading || photoTaken}
+        startIcon={<Iconify icon="material-symbols:upload" />}
+        sx={{ mb: 2 }}
+      >
+        Tải ảnh lên từ thiết bị
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={handleFileUpload}
+        />
+      </Button>
+
+      {uploadedFile && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Đã chọn: {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
+        </Typography>
+      )}
+
+      {/* Upload Preview */}
+      {uploadPreview && (
+        <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <img
+            src={uploadPreview}
+            alt="CCCD đã tải lên"
+            style={{
+              width: '100%',
+              maxWidth: '400px',
+              maxHeight: '300px',
+              height: 'auto',
+              objectFit: 'contain',
+              borderRadius: '8px',
+              backgroundColor: '#f5f5f5',
+            }}
+          />
+        </Box>
+      )}
+    </>
+  );
+
   const renderStepContent = (step: number) => {
     switch (step) {
       case 0:
         return (
           <Box>
             <Typography variant="h6" gutterBottom>
-              Bước 1: Chụp ảnh CCCD/CMND
+              Bước 1: Chụp hoặc tải ảnh CCCD/CMND
             </Typography>
             <Typography variant="body2" color="text.secondary" paragraph>
-              Vui lòng chụp ảnh CCCD/CMND rõ ràng để hệ thống tự động đọc thông tin
+              Vui lòng chụp ảnh hoặc tải ảnh CCCD/CMND rõ ràng để hệ thống tự động đọc thông tin
             </Typography>
 
-            {/* Camera Controls */}
-            <Card sx={{ mb: 2 }}>
-              <CardContent>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  onClick={capturePhoto}
-                  disabled={!cameraReady || loading || photoTaken}
-                  startIcon={<Iconify icon="material-symbols:camera" />}
-                >
-                  Chụp ảnh CCCD
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Camera Preview */}
+            {/* Mode Selection Tabs */}
             <Card sx={{ mb: 3 }}>
-              <CardContent sx={{ p: 0, textAlign: 'center' }}>
-                {cameraReady && !photoTaken ? (
-                  <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                    <video
-                      ref={videoRef}
-                      autoPlay
-                      playsInline
-                      muted
-                      style={{
-                        width: '100%',
-                        maxWidth: '400px',
-                        height: 'auto',
-                        borderRadius: '8px',
-                        backgroundColor: '#000',
-                      }}
-                    />
-                    {/* Guide frame */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '280px',
-                        height: '180px',
-                        maxWidth: '70%',
-                        border: '2px dashed rgba(255, 255, 255, 0.7)',
-                        borderRadius: '8px',
-                        pointerEvents: 'none',
-                      }}
-                    />
-                  </Box>
-                ) : photoTaken && cccdImage ? (
-                  <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                    <img
-                      src={cccdImage}
-                      alt="CCCD đã chụp"
-                      style={{
-                        width: '100%',
-                        maxWidth: '400px',
-                        maxHeight: '300px',
-                        height: 'auto',
-                        objectFit: 'contain',
-                        borderRadius: '8px',
-                        backgroundColor: '#f5f5f5',
-                      }}
-                    />
-                  </Box>
-                ) : (
-                  <Box sx={{ py: 8, bgcolor: 'grey.50' }}>
-                    {loading ? (
-                      <CircularProgress size={48} />
-                    ) : (
-                      <>
-                        <Iconify
-                          icon="material-symbols:camera"
-                          width={64}
-                          sx={{ color: 'grey.400', mb: 2 }}
-                        />
-                        <Typography variant="body2" color="text.secondary">
-                          Đang khởi động camera...
-                        </Typography>
-                      </>
-                    )}
-                  </Box>
-                )}
+              <CardContent sx={{ p: 0 }}>
+                <Tabs
+                  value={captureMode}
+                  onChange={handleModeChange}
+                  variant="fullWidth"
+                  sx={{ borderBottom: 1, borderColor: 'divider' }}
+                >
+                  <Tab 
+                    label="Chụp ảnh" 
+                    value={CaptureMode.CAMERA}
+                    icon={<Iconify icon="material-symbols:camera" width={20} />}
+                    iconPosition="start"
+                  />
+                  <Tab 
+                    label="Tải ảnh lên" 
+                    value={CaptureMode.UPLOAD}
+                    icon={<Iconify icon="material-symbols:upload" width={20} />}
+                    iconPosition="start"
+                  />
+                </Tabs>
+
+                <Box sx={{ p: 3 }}>
+                  {captureMode === CaptureMode.CAMERA ? renderCameraView() : renderUploadView()}
+                </Box>
               </CardContent>
             </Card>
 
@@ -521,7 +652,7 @@ export function SignUpView() {
                     disabled={loading}
                     startIcon={<Iconify icon="material-symbols:refresh" />}
                   >
-                    Chụp lại
+                    {captureMode === CaptureMode.CAMERA ? 'Chụp lại' : 'Tải ảnh khác'}
                   </Button>
                 </CardContent>
               </Card>
@@ -530,11 +661,11 @@ export function SignUpView() {
             {/* OCR Processing Status */}
             {captureAttempted && !ocrExtracted && !loading && (
               <Alert severity="warning" sx={{ mb: 3 }}>
-                Không thể đọc thông tin từ ảnh. Vui lòng chụp lại ảnh rõ hơn.
+                Không thể đọc thông tin từ ảnh. Vui lòng thử lại với ảnh rõ hơn.
               </Alert>
             )}
 
-            {/* CCCD Info Form - CHỈ HIỂN THỊ SAU KHI CHỤP THÀNH CÔNG */}
+            {/* CCCD Info Form - CHỈ HIỂN THỊ SAU KHI CHỤP/TẢI THÀNH CÔNG */}
             {photoTaken && ocrExtracted && (
               <Card sx={{ mb: 3 }}>
                 <CardContent>
@@ -641,7 +772,7 @@ export function SignUpView() {
 
                   {!formData.cccd || !formData.full_name ? (
                     <Alert severity="error" sx={{ mt: 2 }}>
-                      Không thể đọc đủ thông tin từ CCCD. Vui lòng chụp lại.
+                      Không thể đọc đủ thông tin từ CCCD. Vui lòng thử lại.
                     </Alert>
                   ) : null}
                 </CardContent>
@@ -652,22 +783,25 @@ export function SignUpView() {
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="subtitle2" gutterBottom>
-                  Hướng dẫn chụp ảnh:
+                  Hướng dẫn:
                 </Typography>
                 <Box component="ul" sx={{ pl: 2, m: 0 }}>
                   <Typography component="li" variant="body2">
-                    Đặt CCCD trong khung hình
+                    <strong>Chụp ảnh:</strong> Đặt CCCD trong khung hình, đảm bảo ánh sáng đủ
                   </Typography>
                   <Typography component="li" variant="body2">
-                    Đảm bảo ánh sáng đủ, không bị lóa
+                    <strong>Tải ảnh:</strong> Chọn file ảnh rõ nét từ thiết bị
                   </Typography>
                   <Typography component="li" variant="body2">
-                    Chụp ảnh rõ nét, không bị mờ
+                    Đảm bảo ảnh không bị mờ, lóa, hoặc bị che khuất
                   </Typography>
                   <Typography component="li" variant="body2">
                     Đợi hệ thống tự động đọc thông tin
                   </Typography>
                 </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  <strong>Lưu ý:</strong> Ảnh phải có kích thước dưới 5MB
+                </Typography>
               </CardContent>
             </Card>
           </Box>

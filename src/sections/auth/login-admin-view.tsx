@@ -6,7 +6,8 @@ import { Box, Button, TextField, IconButton, InputAdornment, Typography } from '
 import { useRouter } from 'src/routes/hooks';
 
 import { useAuth } from 'src/contexts/AuthContext';
-import { loginAPI } from 'src/services/authService';
+// Use AuthContext.login() instead of directly calling loginAPI
+
 
 export function LoginAdminView() {
   const router = useRouter();
@@ -32,17 +33,16 @@ export function LoginAdminView() {
 
     setLoading(true);
     try {
-      const result: any = await loginAPI({ cccd: form.cccd, password: form.password });
+      // Use AuthContext.login which handles tokens and localStorage
+      const result: any = await login({ cccd: form.cccd, password: form.password });
 
-      const user = result.user;
-      const token = result.authorization?.token || result.token || '';
-
+      // Context/login stored user in context/localStorage; read from response or localStorage
+      const user = result?.user || JSON.parse(localStorage.getItem('user') || 'null');
       const roles = user?.roles || [];
       if (Array.isArray(roles) && (roles.includes('ROLE_ADMIN') || roles.includes('ROLE_SUPER_ADMIN'))) {
-        // login in context
-        login(user, token);
         router.push('/dashboard');
       } else {
+        // Not an admin: show error (do not create an admin session)
         setError('Tài khoản không có quyền truy cập trang quản trị');
       }
     } catch (err: any) {

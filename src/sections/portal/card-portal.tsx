@@ -21,6 +21,7 @@ type Props = CardProps & {
   color?: PaletteColorKey;
   icon: React.ReactNode;
   topIcon?: React.ReactNode;
+  disabled?: boolean;
 };
 
 export function CardPortal({
@@ -29,6 +30,7 @@ export function CardPortal({
   title,
   topIcon,
   color = 'primary',
+  disabled = false,
   ...other
 }: Props) {
   const theme = useTheme();
@@ -72,6 +74,7 @@ export function CardPortal({
       textAlign: 'center',             
     },
     ...(Array.isArray(sx) ? sx : [sx]),
+    ...(disabled ? [{ opacity: 0.6, pointerEvents: 'none', filter: 'grayscale(30%)' }] : []),
   ]}
 >
 

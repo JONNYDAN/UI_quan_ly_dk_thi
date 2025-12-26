@@ -17,7 +17,7 @@ import { Iconify } from 'src/components/iconify';
 import { loginAPI, verifyCCCD } from '../../services/authService';
 
 export function SignInView() {
-  const { login } = useAuth();
+  const { login, loginFromResponse } = useAuth();
   const router = useRouter();
   
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -261,7 +261,7 @@ export function SignInView() {
       
       // Lưu thông tin user và token với cấu trúc đúng
       // result.tokens.accessToken thay vì result.authorization.token
-      login(result.user, result.tokens.accessToken);
+      loginFromResponse(result);
       
       // Điều hướng đến dashboard
       router.push('/dashboard/');
@@ -333,147 +333,11 @@ export function SignInView() {
           </div>
         )}
 
-        {/* Camera Section */}
-        <div style={{ marginBottom: '25px' }}>
-          {!cameraActive && !photoTaken && (
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={startCamera}
-              disabled={loading}
-              style={{
-                backgroundColor: '#124874',
-                color: 'white',
-                padding: '12px',
-                borderRadius: '8px',
-                fontWeight: 500
-              }}
-            >
-              {loading ? 'Đang mở camera...' : 'Bắt đầu xác thực bằng Camera CCCD'}
-            </Button>
-          )}
-
-          {cameraActive && !photoTaken && (
-            <>
-              <div style={{
-                position: 'relative',
-                width: '100%',
-                marginTop: '10px',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                backgroundColor: '#000',
-              }}>
-                <video 
-                  ref={videoRef}
-                  autoPlay 
-                  playsInline
-                  muted // Thêm muted để tránh lỗi autoplay
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    display: 'block'
-                  }}
-                />
-                {/* Guide frame */}
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '280px',
-                  height: '180px',
-                  maxWidth: '80%',
-                  border: '2px dashed rgba(255, 255, 255, 0.7)',
-                  borderRadius: '8px',
-                  pointerEvents: 'none'
-                }} />
-              </div>
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={capturePhoto}
-                disabled={loading}
-                style={{
-                  backgroundColor: '#124874',
-                  color: 'white',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  marginTop: '15px',
-                  fontWeight: 500
-                }}
-              >
-                {loading ? 'Đang xử lý...' : 'Chụp ảnh CCCD'}
-              </Button>
-            </>
-          )}
-
-          {photoTaken && cccdImage && (
-            <>
-              <div style={{
-                position: 'relative',
-                width: '100%',
-                marginTop: '10px',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                backgroundColor: '#f5f5f5',
-                minHeight: '250px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
-                <img 
-                  src={cccdImage} 
-                  alt="CCCD đã chụp"
-                  style={{
-                    width: '100%',
-                    maxWidth: '400px',
-                    maxHeight: '300px',
-                    height: 'auto',
-                    objectFit: 'contain'
-                  }}
-                />
-              </div>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-                <Button
-                  variant="contained"
-                  onClick={retakePhoto}
-                  disabled={loading}
-                  style={{
-                    backgroundColor: '#6c757d',
-                    color: 'white',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    flex: 1
-                  }}
-                >
-                  Chụp lại
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={startCamera}
-                  disabled={loading}
-                  style={{
-                    backgroundColor: '#124874',
-                    color: 'white',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    flex: 1
-                  }}
-                >
-                  Chụp ảnh mới
-                </Button>
-              </div>
-            </>
-          )}
-
-          <canvas ref={canvasRef} style={{ display: 'none' }} />
-        </div>
-
         {/* Manual CCCD Input */}
         <TextField
           fullWidth
           name="cccd"
-          label="Nhập số CCCD (nếu không dùng camera)"
+          label="Nhập số CCCD"
           value={formData.cccd}
           onChange={handleChange}
           disabled={!!ocrData?.id}

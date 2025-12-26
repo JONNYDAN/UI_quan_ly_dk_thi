@@ -16,8 +16,6 @@ export function AuthContent({ sx, children, className, ...other }: AuthContentPr
       className={mergeClasses([layoutClasses.content, className])}
       sx={[
         (theme) => ({
-          py: 1,
-          px: 2,
           width: 1,
           zIndex: 2,
           borderRadius: 2,

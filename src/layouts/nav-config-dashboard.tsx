@@ -1,8 +1,6 @@
-import { SvgColor } from 'src/components/svg-color';
+import { Icon } from '@iconify/react';
 
 // ----------------------------------------------------------------------
-
-const icon = (name: string) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} />;
 
 export type NavItem = {
   title: string;
@@ -13,68 +11,33 @@ export type NavItem = {
 
 export const navData = [
   {
-    title: 'Bảng điều khiển',
-    path: '/dashboard',
-    icon: icon('ic-analytics'),
-  },
-  // {
-  //   title: 'User',
-  //   path: '/user',
-  //   icon: icon('ic-user'),
-  // },
-  // {
-  //   title: 'Product',
-  //   path: '/products',
-  //   icon: icon('ic-cart'),
-  //   info: (
-  //     <Label color="error" variant="inverted">
-  //       +3
-  //     </Label>
-  //   ),
-  // },
-  {
-    title: 'Lịch xét tuyển',
-    path: '/blog',
-    icon: icon('ic--baseline-domain-verification'),
-  },
-  // {
-  //   title: 'Sign in',
-  //   path: '/sign-in',
-  //   icon: icon('ic-lock'),
-  // },
-  // {
-  //   title: 'Not found',
-  //   path: '/404',
-  //   icon: icon('ic-disabled'),
-  // },
-  {
-    title: ' Đăng ký thi ĐGNL',
-    path: '/register-dgnl',
-    icon: icon('ic--round-history-edu'),
-  },
-  // {
-  //   title: 'Xét chứng chỉ ngoại ngữ',
-  //   path: '/xet-ccnn',
-  //   icon: icon('fluent--certificate-20-regular')
-  // },
-  {
-    title: 'Quản trị - Người dùng',
-    path: '/admin/users',
-    icon: icon('ic-user'),
+    title: 'Thông tin thí sinh',
+    path: '/profile',
+    icon: <Icon icon="mdi:book-account-outline" width={24} height={24} />,
   },
   {
-    title: 'Quản trị - Kỳ thi',
-    path: '/admin/exam-management',
-    icon: icon('ic-analytics'),
+    title: 'Đăng ký dự thi',
+    path: '/exam',
+    icon: <Icon icon="lucide:clipboard-edit" width={24} height={24} />,
   },
   {
-    title: 'Quản trị - Thanh toán',
-    path: '/admin/exam-payments',
-    icon: icon('ic--baseline-history'),
+    title: 'Kết quả đăng ký',
+    path: '/examinfo',
+    icon: <Icon icon="mdi:checkbox-marked-circle-outline" width={24} height={24} />,
+  },
+  {
+    title: 'Giấy báo dự thi',
+    path: '/exampaper',
+    icon: <Icon icon="ci:file-document" width={24} height={24} />,
+  },
+  {
+    title: 'Kết quả thi',
+    path: '/results',
+    icon: <Icon icon="tabler:clipboard-check" width={24} height={24} />,
   },
   {
     title: 'Lịch sử thanh toán',
     path: '#',
-    icon: icon('ic--baseline-history'),
+    icon: <Icon icon="mdi:history" width={24} height={24} />,
   }
 ];

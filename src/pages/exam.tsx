@@ -1,6 +1,6 @@
 import { CONFIG } from 'src/config-global';
 
-import { RegisterDgnlView } from 'src/sections/registerDgnl/view';
+import { ExamView } from 'src/sections/exam/view';
 
 // ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@ export default function Page() {
     <>
       <title>{`Products - ${CONFIG.appName}`}</title>
 
-      <RegisterDgnlView />
+      <ExamView />
     </>
   );
 }
