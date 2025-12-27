@@ -193,9 +193,9 @@ const MobileOrderCard = ({ order, isVerySmall = false }: { order: Order; isVeryS
                 sx={{ 
                   borderRadius: 1,
                   fontWeight: 600,
-                  fontSize: isVerySmall ? 11 : 13,
+                  fontSize: isVerySmall ? 11 : 11,
                   py: 0.5,
-                  minHeight: isVerySmall ? 32 : 36
+                  minHeight: isVerySmall ? 32 : 32
                 }}
                 fullWidth
               >

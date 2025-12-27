@@ -994,55 +994,6 @@ export function ExamResultView() {
         </ResultCard>
       </Box>
 
-      {/* Loading Dialog */}
-      <Dialog
-        open={loadingExamResult}
-        disableEscapeKeyDown
-        PaperProps={{
-          sx: {
-            width: { xs: 280, md: 320 },
-            maxWidth: { xs: 280, md: 320 },
-            borderRadius: 3,
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${alpha(theme.palette.primary.main, 0.05)} 100%)`,
-          }
-        }}
-      >
-        <DialogTitle 
-          sx={{ 
-            textAlign: 'center', 
-            pb: 2,
-            fontWeight: 600,
-            fontSize: '1.1rem',
-            color: 'primary.main'
-          }}
-        >
-          Đang tải dữ liệu kết quả thi...
-        </DialogTitle>
-        <DialogContent sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          py: 2 
-        }}>
-          <CircularProgress 
-            size={60} 
-            thickness={4}
-            sx={{ color: 'primary.main' }}
-          />
-        </DialogContent>
-        <Typography 
-          variant="caption" 
-          color="text.secondary" 
-          sx={{ textAlign: 'center', mt: 1 }}
-        >
-          Vui lòng đợi trong giây lát
-        </Typography>
-      </Dialog>
     </DashboardContent>
   );
 }

@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import { 
-  Grid, 
   Box, 
   Paper, 
   Alert, 
@@ -30,13 +29,13 @@ import {
   DialogContentText, 
   Snackbar,
   CircularProgress,
-  styled 
+  styled,
+  Chip
 } from '@mui/material';
 
 import { useAuth } from 'src/contexts/AuthContext';
 import orderService from 'src/services/orderService';
 import paymentService from 'src/services/paymentService';
-
 
 const SERVICE_CODE = import.meta.env.VITE_APP_SERVICE;
 
@@ -252,7 +251,6 @@ export function PaymentDetailView() {
       .then((data) => {
         const rows = data.split(/\r?\n/);
         if (rows[1]) {
-          // Sửa: bỏ escape không cần thiết
           const cells = rows[1].split(/",/);
           const amount = parseInt(cells[1]?.replace(/\D/g, '') || '0');
 
@@ -291,12 +289,12 @@ export function PaymentDetailView() {
   const generateQRCode = () => (
     <QRCodeCanvas
       value={qrCodeData}
-      size={250}
+      size={isMobile ? 200 : 250}
       level="H"
-      includeMargin // Sửa: bỏ ={true}
+      includeMargin
       imageSettings={{
         src: '/logo_hcmue.png',
-        height: 40,
+        height: 30,
         width: 60,
         excavate: true,
       }}
@@ -313,7 +311,6 @@ export function PaymentDetailView() {
       .replace(/[^a-zA-Z0-9\s]/g, '');
   }
 
-  // Sửa hàm crcChecksum để tránh sử dụng bitwise operators
   /* eslint-disable no-bitwise */
   function crcChecksum(data: string) {
     const polynomial = 0x1021;
@@ -338,63 +335,170 @@ export function PaymentDetailView() {
     return null;
   }
 
+  const isPending = status === "PENDING";
+  const isSuccess = status === "SUCCESS";
+
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: { xs: 1, sm: 3 }, maxWidth: "lg", mx: 'auto' }}>
       <Paper 
         elevation={3}
         sx={{
-          background: 'rgba(255, 255, 255, 0.5)',
-          width: '100%',
-          maxWidth: 1200,
-          mx: 'auto'
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: 3,
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider'
         }}
       >
-        <Card variant="outlined">
+        <Card variant="outlined" sx={{ border: 'none' }}>
           <CardHeader
             title={
-              <Typography variant="h5">
-                Nộp lệ phí thi
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Typography variant="h5" fontWeight="600">
+                  Nộp lệ phí thi
+                </Typography>
+                <Chip 
+                  label={isPending ? "Chờ thanh toán" : "Đã thanh toán"} 
+                  color={isPending ? "warning" : "success"}
+                  size="medium"
+                  sx={{ fontWeight: 500 }}
+                />
+              </Box>
             }
+            sx={{ 
+              backgroundColor: '#f8f9fa',
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              p: 1.5
+            }}
           />
-          <Divider variant="middle" sx={{ border: '1px solid', borderColor: 'text.primary' }} />
-          <CardContent>
+          
+          <Divider />
+          
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
             {exam && (
               <Box sx={{ flexGrow: 1 }}>
-                {/* Sử dụng container từ MUI phiên bản mới */}
+                {/* Layout điều kiện: Nếu đã thanh toán, hiển thị full width */}
                 <Box sx={{ 
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' },
-                  gap: isMobile ? 0 : 1,
+                  display: 'flex',
+                  flexDirection: { xs: 'column', md: isSuccess ? 'column' : 'row' },
+                  gap: 3
                 }}>
-                  {/* Phần thông tin đơn hàng */}
-                  <Box>
-                    <Card>
-                      <CardContent sx={{ px: 0 }}>
-                        <Box sx={{ mx: 2 }}>
-                          <Typography variant="subtitle1" component="div" sx={{ fontWeight: "bold" }}>
-                            Kì thi: Đợt {exam.turn} tại {exam.location} từ {exam.openAt} đến {exam.closeAt}
+                  {/* Phần thông tin đơn hàng - Chiếm full width nếu đã thanh toán */}
+                  <Box sx={{ 
+                    flex: 1,
+                    minWidth: 0 // Để tránh overflow
+                  }}>
+                    <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                      <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                        <Box sx={{ mb: 3 }}>
+                          <Typography variant="subtitle1" fontWeight="600" gutterBottom>
+                            Kì thi: Đợt {exam.turn} tại {exam.location}
                           </Typography>
-                          <Typography variant="subtitle1" component="div" color="primary">
-                            Mã đăng ký: {orderCode}
+                          <Typography variant="body2" color="text.secondary" gutterBottom>
+                            Thời gian: {exam.openAt} đến {exam.closeAt}
                           </Typography>
-                          <Typography variant="subtitle1" component="div">
-                            Ngày đăng ký: {orderDate}
-                          </Typography>
-                          {status === "PENDING" && (
-                            <Typography variant="subtitle1" component="div">
-                              Hạn thanh toán: {expireDate}
-                            </Typography>
-                          )}
-                          {status === "SUCCESS" && (
-                            <Alert severity="success">
-                              <AlertTitle>Đã thanh toán</AlertTitle>
-                              Ngày thanh toán: {paymentAt} <br />
-                              Cổng thanh toán: {paymentGateway}
-                            </Alert>
-                          )}
+                          
+                          <Box sx={{ 
+                            display: 'flex', 
+                            flexWrap: 'wrap', 
+                            gap: 2, 
+                            mt: 2,
+                            alignItems: 'center'
+                          }}>
+                            <Box sx={{ 
+                              backgroundColor: '#e3f2fd', 
+                              p: 1.5, 
+                              borderRadius: 1,
+                              flex: 1,
+                              minWidth: 'fit-content'
+                            }}>
+                              <Typography variant="caption" color="text.secondary">
+                                Mã đăng ký
+                              </Typography>
+                              <Typography variant="body1" fontWeight="600" color="primary">
+                                {orderCode}
+                              </Typography>
+                            </Box>
+                            
+                            <Box sx={{ 
+                              backgroundColor: '#f3e5f5', 
+                              p: 1.5, 
+                              borderRadius: 1,
+                              flex: 1,
+                              minWidth: 'fit-content'
+                            }}>
+                              <Typography variant="caption" color="text.secondary">
+                                Ngày đăng ký
+                              </Typography>
+                              <Typography variant="body1">
+                                {orderDate}
+                              </Typography>
+                            </Box>
+                            
+                            {isPending && (
+                              <Box sx={{ 
+                                backgroundColor: '#fff3e0', 
+                                p: 1.5, 
+                                borderRadius: 1,
+                                flex: 1,
+                                minWidth: 'fit-content'
+                              }}>
+                                <Typography variant="caption" color="text.secondary">
+                                  Hạn thanh toán
+                                </Typography>
+                                <Typography variant="body1" color="error.main" fontWeight="500">
+                                  {expireDate}
+                                </Typography>
+                              </Box>
+                            )}
+                          </Box>
                         </Box>
-                        <TableContainer component={Paper} sx={{ mt: 3 }}>
+
+                        {isSuccess && (
+                          <Alert 
+                            severity="success" 
+                            sx={{ 
+                              mb: 3, 
+                              borderRadius: 2,
+                              '& .MuiAlert-message': { width: '100%' }
+                            }}
+                          >
+                            <AlertTitle>Thanh toán thành công</AlertTitle>
+                            <Box sx={{ 
+                              display: 'flex', 
+                              flexWrap: 'wrap', 
+                              gap: 3,
+                              mt: 1 
+                            }}>
+                              <Box>
+                                <Typography variant="caption" color="inherit">
+                                  Ngày thanh toán
+                                </Typography>
+                                <Typography variant="body1" fontWeight="500">
+                                  {paymentAt}
+                                </Typography>
+                              </Box>
+                              <Box>
+                                <Typography variant="caption" color="inherit">
+                                  Cổng thanh toán
+                                </Typography>
+                                <Typography variant="body1" fontWeight="500">
+                                  {paymentGateway}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </Alert>
+                        )}
+
+                        <TableContainer 
+                          component={Paper} 
+                          variant="outlined" 
+                          sx={{ 
+                            borderRadius: 2,
+                            overflow: 'hidden'
+                          }}
+                        >
                           <Table aria-label="customized table">
                             <TableHead>
                               <TableRow>
@@ -406,121 +510,191 @@ export function PaymentDetailView() {
                               {orderDetails.map((row, index) => (
                                 <StyledTableRow key={index}>
                                   <StyledTableCell>
-                                    {row.subject}<br />
-                                    {row.date}<br />
-                                    {row.time}
+                                    <Typography fontWeight="500">{row.subject}</Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                      {row.date} • {row.time}
+                                    </Typography>
                                   </StyledTableCell>
                                   <StyledTableCell align="right">
-                                    {new Intl.NumberFormat().format(row.price)}đ
+                                    <Typography fontWeight="500">
+                                      {new Intl.NumberFormat().format(row.price)}đ
+                                    </Typography>
                                   </StyledTableCell>
                                 </StyledTableRow>
                               ))}
                               <StyledTableRow>
-                                <StyledTableCellTotal align="center">Tổng lệ phí</StyledTableCellTotal>
-                                <StyledTableCellTotal align="right">
-                                  {new Intl.NumberFormat().format(totalPrice)}đ
+                                <StyledTableCellTotal align="center" colSpan={2}>
+                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Typography>Tổng lệ phí</Typography>
+                                    <Typography>
+                                      {new Intl.NumberFormat().format(totalPrice)}đ
+                                    </Typography>
+                                  </Box>
                                 </StyledTableCellTotal>
                               </StyledTableRow>
                             </TableBody>
                           </Table>
                         </TableContainer>
+
+                        {isPending && (
+                          <CardActions sx={{ 
+                            justifyContent: 'flex-end', 
+                            px: 0,
+                            pt: 3 
+                          }}>
+                            <ButtonGroup variant="outlined" aria-label="text button group">
+                              <Button 
+                                size="large" 
+                                color="error" 
+                                onClick={handleOpenCancel}
+                                sx={{ 
+                                  borderRadius: 2,
+                                  px: 3
+                                }}
+                              >
+                                Huỷ đăng ký
+                              </Button>
+                            </ButtonGroup>
+                          </CardActions>
+                        )}
                       </CardContent>
-                      <CardActions sx={{ justifyContent: 'flex-end' }}>
-                        <ButtonGroup variant="text" aria-label="text button group">
-                          {status === "PENDING" && (
-                            <Button size="large" color="error" onClick={handleOpenCancel}>
-                              Huỷ đăng ký
-                            </Button>
-                          )}
-                        </ButtonGroup>
-                      </CardActions>
                     </Card>
-                    {status === "PENDING" && totalPrice > 0 && (
-                      <Alert severity="warning" sx={{ my: 1 }}>
-                        <Typography component="div" variant="body1" color="error">
-                          Lưu ý: bạn cần hoàn tất việc thanh toán lệ phí trong vòng 24 giờ tính từ ngày đăng ký! Hệ thống sẽ tự động cập nhật kết quả thanh toán.
+
+                    {isPending && totalPrice > 0 && (
+                      <Alert 
+                        severity="warning" 
+                        sx={{ 
+                          mt: 3, 
+                          borderRadius: 2,
+                          border: '1px solid',
+                          borderColor: 'warning.light'
+                        }}
+                      >
+                        <Typography variant="body1" fontWeight="600" color="error" gutterBottom>
+                          ⚠️ Lưu ý quan trọng
                         </Typography>
-                        <Typography component="div" variant="body1">
-                          Nếu kết quả thanh toán chưa được cập nhật sau 24 giờ tính từ thời điểm giao dịch thành công, vui lòng gửi thư điện tử về{' '}
-                          <Box component="span" fontWeight="bold" color="blue">
+                        <Typography variant="body2" gutterBottom>
+                          Bạn cần hoàn tất việc thanh toán lệ phí trong vòng <strong>24 giờ</strong> tính từ ngày đăng ký!
+                        </Typography>
+                        <Typography variant="body2">
+                          Nếu kết quả thanh toán chưa được cập nhật sau 24 giờ tính từ thời điểm giao dịch thành công, 
+                          vui lòng liên hệ: 
+                          <Box component="span" fontWeight="600" color="primary.main" sx={{ ml: 0.5 }}>
                             dgnl.hotro@hcmue.edu.vn
-                          </Box>{' '}
-                          để được hỗ trợ.
+                          </Box>
                         </Typography>
                       </Alert>
                     )}
                   </Box>
 
-                  {/* Phần thanh toán QR Code */}
-                  <Box sx={{ mt: { xs: 2, md: 1 } }}>
-                    {status === "PENDING" && totalPrice > 0 && (
-                      <Card>
-                        <CardContent>
-                          <Box sx={{ textAlign: 'center' }}>
-                            <Typography variant="h6" color="#4169E1" gutterBottom>
+                  {/* Phần QR Code - Chỉ hiển thị khi đang chờ thanh toán */}
+                  {isPending && totalPrice > 0 && (
+                    <Box sx={{ 
+                      width: { xs: '100%', md: 400 },
+                      minWidth: { md: 400 }
+                    }}>
+                      <Card variant="outlined" sx={{ 
+                        borderRadius: 2,
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}>
+                        <CardContent sx={{ 
+                          flex: 1,
+                          p: { xs: 2, sm: 3 },
+                          display: 'flex',
+                          flexDirection: 'column'
+                        }}>
+                          <Box sx={{ textAlign: 'center', mb: 2 }}>
+                            <Typography variant="h6" color="primary.main" fontWeight="600" gutterBottom>
                               Chuyển tiền bằng mã QR
                             </Typography>
-                            <Box
-                              sx={{
-                                border: '2px solid black',
-                                p: 2,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                width: 'fit-content',
-                                margin: '20px auto'
-                              }}
-                            >
-                              {qrCodeData ? (
-                                generateQRCode()
-                              ) : (
-                                <Typography>Đang tạo mã QR...</Typography>
-                              )}
+                            <Typography variant="body2" color="text.secondary">
+                              Quét mã QR để chuyển khoản nhanh chóng
+                            </Typography>
+                          </Box>
+                          
+                          <Box sx={{ 
+                            border: '2px solid',
+                            borderColor: 'divider',
+                            p: 2,
+                            borderRadius: 2,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: 'white',
+                            my: 2,
+                            mx: 'auto',
+                            width: 'fit-content'
+                          }}>
+                            {qrCodeData ? (
+                              generateQRCode()
+                            ) : (
+                              <CircularProgress size={40} />
+                            )}
+                          </Box>
+                          
+                          <Box sx={{ flex: 1 }}>
+                            <Alert severity="info" sx={{ borderRadius: 2 }}>
+                              <Typography variant="body2" fontWeight="500">
+                                Nội dung chuyển khoản:
+                              </Typography>
+                            </Alert>
+                            <Box sx={{ 
+                              backgroundColor: '#f5f5f5', 
+                              p: 1.5, 
+                              borderRadius: 1,
+                              mt: 1,
+                              border: '1px dashed',
+                              borderColor: 'divider',
+                              mb: 2
+                            }}>
+                              <Typography variant="body2" fontWeight="600" sx={{ wordBreak: 'break-all' }}>
+                                {SERVICE_CODE} {orderCode} {fullname}
+                              </Typography>
                             </Box>
-                            <Box sx={{ textAlign: 'left' }}>
-                              <Alert severity="info" sx={{ m: 1 }}>
-                                <Typography variant="body1">
-                                  Khi dùng các ứng dụng chuyển khoản, thí sinh phải thấy được nội dung chuyển khoản như bên dưới
-                                </Typography>
-                                <Typography variant="body1" fontWeight="bold">
-                                  {SERVICE_CODE} {orderCode} {fullname}
+                            
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                              <Alert severity="error" variant="outlined" sx={{ borderRadius: 2 }}>
+                                <Typography variant="body2" fontWeight="500">
+                                  ⛔ KHÔNG SỬ DỤNG VÍ SHOPEE để thanh toán
                                 </Typography>
                               </Alert>
-                              <Alert severity="error" sx={{ m: 1 }}>
-                                <Typography component="span" variant="body1" fontWeight="bold">
-                                  KHÔNG SỬ DỤNG VÍ SHOPEE
-                                </Typography>{' '}
-                                <Typography component="span" variant="body1">
-                                  để thanh toán
+                              
+                              <Alert severity="warning" variant="outlined" sx={{ borderRadius: 2 }}>
+                                <Typography variant="body2">
+                                  <strong>NGÂN HÀNG AGRIBANK VÀ VÍ MOMO</strong> sẽ được xác nhận sau 24-36 giờ
                                 </Typography>
                               </Alert>
-                              <Alert severity="warning" sx={{ m: 1 }}>
-                                <Typography component="span" variant="body1" fontWeight="bold">
-                                  NGÂN HÀNG AGRIBANK VÀ VÍ MOMO
-                                </Typography>{' '}
-                                <Typography component="span" variant="body1">
-                                  sẽ được xác nhận thanh toán sau 24 đến 36 giờ tính từ thời điểm hoàn tất giao dịch
-                                </Typography>
-                              </Alert>
-                              <Alert severity="success" sx={{ m: 1 }}>
-                                <Typography component="span" variant="body1" fontWeight="bold">
-                                  CÁC NGÂN HÀNG VÀ VÍ ĐIỆN TỬ KHÁC
-                                </Typography>{' '}
-                                <Typography component="span" variant="body1">
-                                  sẽ được xác nhận thanh toán sau 15 phút tính từ thời điểm hoàn tất giao dịch
+                              
+                              <Alert severity="success" variant="outlined" sx={{ borderRadius: 2 }}>
+                                <Typography variant="body2">
+                                  <strong>CÁC NGÂN HÀNG VÀ VÍ ĐIỆN TỬ KHÁC</strong> sẽ được xác nhận sau 15 phút
                                 </Typography>
                               </Alert>
                             </Box>
                           </Box>
-                          <Stack spacing={2} direction="column" sx={{ mt: 2 }}>
-                            <Button variant="outlined" onClick={handleCheckBankingClick}>
+                          
+                          <Stack spacing={2} sx={{ mt: 3 }}>
+                            <Button 
+                              variant="outlined" 
+                              onClick={handleCheckBankingClick}
+                              sx={{ borderRadius: 2 }}
+                            >
                               Kiểm tra kết quả thanh toán
+                            </Button>
+                            <Button 
+                              variant="contained" 
+                              onClick={handleMoMoPayment}
+                              sx={{ borderRadius: 2, py: 1.5 }}
+                            >
+                              Thanh toán bằng MoMo
                             </Button>
                           </Stack>
                         </CardContent>
                       </Card>
-                    )}
-                  </Box>
+                    </Box>
+                  )}
                 </Box>
 
                 {/* Cancel Dialog */}
@@ -529,18 +703,33 @@ export function PaymentDetailView() {
                   onClose={handleCloseCancel}
                   aria-labelledby="alert-dialog-title"
                   aria-describedby="alert-dialog-description"
+                  PaperProps={{ sx: { borderRadius: 2 } }}
                 >
-                  <DialogTitle id="alert-dialog-title">
-                    Bạn có muốn hủy đăng ký?
+                  <DialogTitle id="alert-dialog-title" fontWeight="600">
+                    Xác nhận hủy đăng ký
                   </DialogTitle>
                   <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                      Tất cả môn thi bạn đăng ký với mã {orderCode} sẽ bị hủy!
+                      <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+                        Tất cả môn thi bạn đăng ký với mã <strong>{orderCode}</strong> sẽ bị hủy!
+                      </Alert>
+                      Bạn có chắc chắn muốn hủy đăng ký này không?
                     </DialogContentText>
                   </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleCloseCancel}>Quay lại</Button>
-                    <Button color="error" onClick={handleCancelOrder} autoFocus>
+                  <DialogActions sx={{ p: 3, pt: 0 }}>
+                    <Button 
+                      onClick={handleCloseCancel}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Quay lại
+                    </Button>
+                    <Button 
+                      color="error" 
+                      onClick={handleCancelOrder} 
+                      autoFocus
+                      variant="contained"
+                      sx={{ borderRadius: 2 }}
+                    >
                       Xác nhận hủy
                     </Button>
                   </DialogActions>
@@ -550,30 +739,6 @@ export function PaymentDetailView() {
           </CardContent>
         </Card>
       </Paper>
-
-      {/* Loading Dialog */}
-      {loadingPayment && (
-        <Dialog 
-          open={loadingPayment} 
-          disableEscapeKeyDown
-          sx={{
-            '& .MuiDialog-paper': {
-              width: '300px',
-              maxWidth: '300px',
-              p: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-          }}
-        >
-          <DialogTitle sx={{ textAlign: 'center' }}>Đang tải dữ liệu đăng kí...</DialogTitle>
-          <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <CircularProgress size={80} />
-          </DialogContent>
-        </Dialog>
-      )}
 
       {/* Snackbar for banking check */}
       <Snackbar
@@ -586,7 +751,11 @@ export function PaymentDetailView() {
           onClose={handleCheckBankingClose}
           severity={snackType}
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{ 
+            width: '100%',
+            borderRadius: 2,
+            alignItems: 'center'
+          }}
         >
           {snackMsg}
         </Alert>
