@@ -1,13 +1,16 @@
 import type { Theme, SxProps, Breakpoint } from '@mui/material/styles';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { varAlpha } from 'minimal-shared/utils';
 
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import { useTheme } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import Drawer, { drawerClasses } from '@mui/material/Drawer';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
@@ -31,6 +34,8 @@ export type NavContentProps = {
   };
   workspaces: WorkspacesPopoverProps['data'];
   sx?: SxProps<Theme>;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 };
 
 export function NavDesktop({
@@ -39,8 +44,23 @@ export function NavDesktop({
   slots,
   workspaces,
   layoutQuery,
+  collapsed = false, // Nhận từ parent
+  onToggleCollapse, // Nhận từ parent
 }: NavContentProps & { layoutQuery: Breakpoint }) {
   const theme = useTheme();
+
+  // Nếu có onToggleCollapse từ parent thì dùng, không thì tạo local state
+  const [localCollapsed, setLocalCollapsed] = useState(false);
+  
+  const isCollapsed = onToggleCollapse ? collapsed : localCollapsed;
+  
+  const toggleCollapse = () => {
+    if (onToggleCollapse) {
+      onToggleCollapse();
+    } else {
+      setLocalCollapsed(!localCollapsed);
+    }
+  };
 
   return (
     <Box
@@ -54,7 +74,10 @@ export function NavDesktop({
         position: 'fixed',
         flexDirection: 'column',
         zIndex: 'var(--layout-nav-zIndex)',
-        width: 'var(--layout-nav-vertical-width)',
+        width: isCollapsed 
+          ? 'var(--layout-nav-collapsed-width, 70px)' 
+          : 'var(--layout-nav-vertical-width)',
+        transition: 'width 0.3s ease',
         borderRight: `1px solid ${varAlpha(theme.vars.palette.grey['500Channel'], 0.12)}`,
         [theme.breakpoints.up(layoutQuery)]: {
           display: 'flex',
@@ -63,7 +86,33 @@ export function NavDesktop({
         backgroundColor: 'background.paper',
       }}
     >
-      <NavContent data={data} slots={slots} workspaces={workspaces} />
+      {/* Nút toggle */}
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: isCollapsed ? 'center' : 'flex-end',
+        mb: 1 
+      }}>
+        <IconButton 
+          onClick={toggleCollapse} 
+          size="small"
+          sx={{ 
+            mr: isCollapsed ? 0 : -1,
+          }}
+        >
+          {isCollapsed ? (
+            <ChevronRightIcon fontSize="small" />
+          ) : (
+            <ChevronLeftIcon fontSize="small" />
+          )}
+        </IconButton>
+      </Box>
+
+      <NavContent 
+        data={data} 
+        slots={slots} 
+        workspaces={workspaces} 
+        collapsed={isCollapsed} 
+      />
     </Box>
   );
 }
@@ -108,16 +157,20 @@ export function NavMobile({
 
 // ----------------------------------------------------------------------
 
-export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
+export function NavContent({ data, slots, workspaces, sx, collapsed }: NavContentProps) {
   const pathname = usePathname();
 
   return (
     <>
-      <Logo />
+      {/* Logo - Ẩn khi thu gọn */}
+      {!collapsed && <Logo />}
+      {collapsed && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+          <Logo sx={{ width: 50, height: 40 }} />
+        </Box>
+      )}
 
       {slots?.topArea}
-
-      {/* <WorkspacesPopover data={workspaces} sx={{ my: 2 }} /> */}
 
       <Scrollbar fillContent>
         <Box
@@ -150,15 +203,16 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
                     href={item.path}
                     sx={[
                       (theme) => ({
-                        pl: 2,
+                        pl: collapsed ? 1.5 : 2,
                         py: 1,
-                        gap: 2,
-                        pr: 1.5,
+                        gap: collapsed ? 0 : 2,
+                        pr: collapsed ? 1.5 : 1.5,
                         borderRadius: 0.75,
-                        typography: 'body2',
+                        typography: collapsed ? 'caption' : 'body2',
                         fontWeight: 'fontWeightMedium',
                         color: theme.vars.palette.text.secondary,
                         minHeight: 44,
+                        justifyContent: collapsed ? 'center' : 'flex-start',
                         ...(isActived && {
                           fontWeight: 'fontWeightSemiBold',
                           color: theme.vars.palette.primary.main,
@@ -174,11 +228,14 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
                       {item.icon}
                     </Box>
 
-                    <Box component="span" sx={{ flexGrow: 1 }}>
-                      {item.title}
-                    </Box>
+                    {/* Ẩn text khi thu gọn */}
+                    {!collapsed && (
+                      <Box component="span" sx={{ flexGrow: 1 }}>
+                        {item.title}
+                      </Box>
+                    )}
 
-                    {item.info && item.info}
+                    {!collapsed && item.info && item.info}
                   </ListItemButton>
                 </ListItem>
               );
@@ -189,7 +246,8 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
 
       {slots?.bottomArea}
 
-      <NavUpgrade />
+      {/* Ẩn NavUpgrade khi thu gọn */}
+      {!collapsed && <NavUpgrade />}
     </>
   );
 }

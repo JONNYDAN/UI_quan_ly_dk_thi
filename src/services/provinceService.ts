@@ -1,6 +1,22 @@
 import api from './api';
 
-export const getAllProvinces = async () => {
+// Types
+export interface Province {
+  id: number;
+  code: string;
+  name: string;
+  [key: string]: any;
+}
+
+export interface ApiResponse<T = any> {
+  data?: T;
+  message?: string;
+  success?: boolean;
+  [key: string]: any;
+}
+
+// Service functions
+export const getAllProvinces = async (): Promise<ApiResponse<Province[]>> => {
   try {
     const response = await api.get('/provinces');
     return response.data;
@@ -9,6 +25,8 @@ export const getAllProvinces = async () => {
   }
 };
 
-export default {
+const provinceService = {
   getAllProvinces,
 };
+
+export default provinceService;

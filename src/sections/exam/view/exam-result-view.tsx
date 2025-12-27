@@ -214,7 +214,6 @@ export function ExamResultView() {
       // Fetch user re-orders (for re-exam button)
       try {
         const ordersResponse = await getUserReOrders();
-        console.log('Re-orders response:', ordersResponse);
         
         if (ordersResponse?.data?.data) {
           const orderList = ordersResponse.data.data;
@@ -233,7 +232,6 @@ export function ExamResultView() {
       // Fetch confirm khaosat
       try {
         const confirmResponse = await getConfirmKhaoSat(md5CCCD, currentUser.cccd);
-        console.log('Confirm response:', confirmResponse);
         
         if (confirmResponse?.status) {
           setConfirmStatus(confirmResponse?.status);
@@ -250,7 +248,6 @@ export function ExamResultView() {
         // Fetch exam results
         try {
           const examResultsResponse = await getExamResults(currentUser.cccd);
-          console.log('Exam results response:', examResultsResponse);
           
           if (examResultsResponse?.exams) {
             const examData = examResultsResponse.exams;

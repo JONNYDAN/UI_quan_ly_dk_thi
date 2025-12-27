@@ -14,9 +14,24 @@ export interface User {
 }
 
 export interface UserInfo {
-  fullname?: string;
+  id?: string | number;
   cccd?: string;
+  fullname?: string;
+  email?: string;
+  phone?: string;
   birthday?: string;
+  createdAt?: string;
+  gender?: number;
+  student_id?: string;
+  address?: string;
+  role?: string;
+  status?: string;
+  school?: string;
+  district?: string;
+  province?: string;
+  schoolId?: string;
+  schooldistrictId?: string;
+  schoolprovinceId?: string;
   [key: string]: any;
 }
 
@@ -53,6 +68,7 @@ export interface ApiResponse<T = any> {
 
 export interface ChangePasswordData {
   currentPassword: string;
+  oldPassword: string;
   newPassword: string;
   confirmPassword: string;
 }
@@ -116,7 +132,19 @@ export const getAllUser = async (): Promise<ApiResponse<User[]>> => {
   }
 };
 
-export const getUserInfo = async (): Promise<ApiResponse<{ data: UserInfo }>> => {
+export const getUserInfo = async (): Promise<ApiResponse<{
+  id: number;
+  fullname: string;
+  cccd: string;
+  birthday: string;
+  gender: number;
+  email: string;
+  phone: string;
+  student_id: string | null;
+  createdAt: string;
+  updatedAt: string;
+  [key: string]: any;
+}>> => {
   try {
     const response = await api.get('/user');
     return response.data;

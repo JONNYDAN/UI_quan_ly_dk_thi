@@ -2,6 +2,7 @@ import type { Breakpoint } from '@mui/material/styles';
 
 import { merge } from 'es-toolkit';
 import { useBoolean } from 'minimal-shared/hooks';
+import { createContext, useContext, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -29,6 +30,17 @@ import type { MainSectionProps } from '../core/main-section';
 import type { HeaderSectionProps } from '../core/header-section';
 import type { LayoutSectionProps } from '../core/layout-section';
 
+// Tạo Context để chia sẻ trạng thái collapsed
+const SidebarContext = createContext<{
+  collapsed: boolean;
+  toggleCollapsed: () => void;
+}>({
+  collapsed: false,
+  toggleCollapsed: () => {},
+});
+
+export const useSidebar = () => useContext(SidebarContext);
+
 // ----------------------------------------------------------------------
 
 type LayoutBaseProps = Pick<LayoutSectionProps, 'sx' | 'children' | 'cssVars'>;
@@ -52,6 +64,13 @@ export function DashboardLayout({
   const { user } = useAuth(); 
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
+
+  // Thêm state quản lý trạng thái collapsed
+  const [collapsed, setCollapsed] = useState(false);
+  
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
 
   const renderHeader = () => {
     const headerSlotProps: HeaderSectionProps['slotProps'] = {
@@ -110,41 +129,81 @@ export function DashboardLayout({
   const renderMain = () => <MainSection {...slotProps?.main}>{children}</MainSection>;
 
   return (
-    <LayoutSection
-      /** **************************************
-       * @Header
-       *************************************** */
-      headerSection={renderHeader()}
-      /** **************************************
-       * @Sidebar
-       *************************************** */
-      sidebarSection={
-        <NavDesktop data={navData} layoutQuery={layoutQuery} workspaces={_workspaces} />
-      }
-      /** **************************************
-       * @Footer
-       *************************************** */
-      footerSection={renderFooter()}
-      /** **************************************
-       * @Styles
-       *************************************** */
-      cssVars={{ ...dashboardLayoutVars(theme), ...cssVars }}
-      sx={[
-        {
-          [`& .${layoutClasses.sidebarContainer}`]: {
-            [theme.breakpoints.up(layoutQuery)]: {
-              pl: 'var(--layout-nav-vertical-width)',
-              transition: theme.transitions.create(['padding-left'], {
-                easing: 'var(--layout-transition-easing)',
-                duration: 'var(--layout-transition-duration)',
-              }),
+    <SidebarContext.Provider value={{ collapsed, toggleCollapsed }}>
+      <LayoutSection
+        /** **************************************
+         * @Header
+         *************************************** */
+        headerSection={renderHeader()}
+        /** **************************************
+         * @Sidebar
+         *************************************** */
+        sidebarSection={
+          <NavDesktop 
+            data={navData} 
+            layoutQuery={layoutQuery} 
+            workspaces={_workspaces}
+            collapsed={collapsed}
+            onToggleCollapse={toggleCollapsed}
+          />
+        }
+        /** **************************************
+         * @Footer
+         *************************************** */
+        footerSection={renderFooter()}
+        /** **************************************
+         * @Styles
+         *************************************** */
+        cssVars={{ 
+          ...dashboardLayoutVars(theme), 
+          ...cssVars,
+          // Thêm CSS variable cho width sidebar
+          '--layout-nav-collapsed-width': '70px',
+        }}
+        sx={[
+          {
+            // Điều chỉnh container chính (chứa cả sidebar và main)
+            [`& .${layoutClasses.sidebarContainer}`]: {
+              [theme.breakpoints.up(layoutQuery)]: {
+                // Điều chỉnh padding-left cho toàn bộ content area
+                pl: collapsed 
+                  ? 'var(--layout-nav-collapsed-width, 70px)' 
+                  : 'var(--layout-nav-vertical-width, 280px)',
+                transition: theme.transitions.create(['padding-left'], {
+                  easing: 'var(--layout-transition-easing, ease-in-out)',
+                  duration: 'var(--layout-transition-duration, 300ms)',
+                }),
+              },
+            },
+            // Đảm bảo main content chiếm toàn bộ không gian còn lại
+            [`& .${layoutClasses.main}`]: {
+              [theme.breakpoints.up(layoutQuery)]: {
+                width: '100%',
+                transition: theme.transitions.create(['width'], {
+                  easing: 'var(--layout-transition-easing, ease-in-out)',
+                  duration: 'var(--layout-transition-duration, 300ms)',
+                }),
+              },
+            },
+            // Điều chỉnh header để đồng bộ với sidebar
+            [`& .${layoutClasses.header}`]: {
+              [theme.breakpoints.up(layoutQuery)]: {
+                width:'100%',
+                left: collapsed 
+                  ? 'var(--layout-nav-collapsed-width, 70px)'
+                  : 'var(--layout-nav-vertical-width, 280px)',
+                transition: theme.transitions.create(['width', 'left'], {
+                  easing: 'var(--layout-transition-easing, ease-in-out)',
+                  duration: 'var(--layout-transition-duration, 300ms)',
+                }),
+              },
             },
           },
-        },
-        ...(Array.isArray(sx) ? sx : [sx]),
-      ]}
-    >
-      {renderMain()}
-    </LayoutSection>
+          ...(Array.isArray(sx) ? sx : [sx]),
+        ]}
+      >
+        {renderMain()}
+      </LayoutSection>
+    </SidebarContext.Provider>
   );
 }
