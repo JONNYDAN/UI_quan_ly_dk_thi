@@ -647,15 +647,6 @@ export function ExamView() {
           </DialogActions>
         </Dialog>
 
-        {/* Loading Dialog */}
-        {/* <Dialog open={loadingExams} disableEscapeKeyDown>
-          <DialogTitle sx={{ textAlign: "center" }}>
-            Đang tải dữ liệu kỳ thi...
-          </DialogTitle>
-          <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 3 }}>
-            <CircularProgress />
-          </DialogContent>
-        </Dialog> */}
       </Container>
     </DashboardContent>
   );

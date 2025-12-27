@@ -22,17 +22,17 @@ export const navData = [
   },
   {
     title: 'Kết quả đăng ký',
-    path: '/examinfo',
+    path: '/exam-info',
     icon: <Icon icon="mdi:checkbox-marked-circle-outline" width={24} height={24} />,
   },
   {
     title: 'Giấy báo dự thi',
-    path: '/exampaper',
+    path: '/exam-paper',
     icon: <Icon icon="ci:file-document" width={24} height={24} />,
   },
   {
     title: 'Kết quả thi',
-    path: '/results',
+    path: '/result',
     icon: <Icon icon="tabler:clipboard-check" width={24} height={24} />,
   },
   {

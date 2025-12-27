@@ -263,8 +263,8 @@ export function SignInView() {
       // result.tokens.accessToken thay vì result.authorization.token
       loginFromResponse(result);
       
-      // Điều hướng đến dashboard
-      router.push('/dashboard/');
+      // Điều hướng đến profile
+      router.push('/profile/');
       
     } catch (err: any) {
       console.error("Lỗi đăng nhập chi tiết:", err);

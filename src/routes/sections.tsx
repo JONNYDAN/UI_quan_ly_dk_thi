@@ -22,10 +22,12 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const PortalPage = lazy(() => import('src/pages/portal'));
 // export const PhoneOtpPage = lazy(() => import('src/pages/phone-otp'));
-export const HomePage = lazy(() => import('src/pages/home'));
 export const SearchPage = lazy(() => import('src/pages/search'));
 
 export const ExamPage = lazy(() => import('src/pages/exam'));
+export const ExamInfoPage = lazy(() => import('src/pages/exam-info'));
+export const ExamPaperPage = lazy(() => import('src/pages/exam-paper'));
+export const ExamResultPage = lazy(() => import('src/pages/exam-result'));
 
 export const PaymentDetailPage = lazy(() => import('src/pages/payment'));
 export const PaymentReturnPage = lazy(() => import('src/pages/payment'));
@@ -61,14 +63,13 @@ export const routesSection: RouteObject[] = [
       </DashboardLayout>
     ),
     children: [
-      // { path: 'products', element: <ProductsPage /> },
-      // { path: 'blog', element: <BlogPage /> },
-      // { path: 'user', element: <UserPage /> },
-      // { path: 'profile', element: <ProfilePage /> },
       { path: 'profile', element: <DashboardPage /> },
 
       // Exam 
       { path: 'exam', element: <ExamPage/> },
+      { path: 'exam-info', element: <ExamInfoPage/> },
+      { path: 'exam-paper', element: <ExamPaperPage/> },
+      { path: 'result', element: <ExamResultPage/> },
 
       // Payment pages
       { path: 'payment/:type/:orderCode', element: <PaymentDetailPage /> },
@@ -101,26 +102,10 @@ export const routesSection: RouteObject[] = [
   //   ),
   // },
   {
-    path: 'register-dgnl',
-    element: (
-      <DashboardLayout>
-        <ExamPage />
-      </DashboardLayout>
-    )
-  },
-  {
     path: '/',
     element: (
       <BackgroundLayout>
         <PortalPage />
-      </BackgroundLayout>
-    )
-  },
-  {
-    path: 'home',
-    element: (
-      <BackgroundLayout>
-        <HomePage />
       </BackgroundLayout>
     )
   },

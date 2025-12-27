@@ -1,5 +1,70 @@
 import api from './api';
 
+export interface Exam {
+  id: number;
+  code: string;
+  location: string;
+  location_code: string;
+  short_code: string;
+  turn: number;
+  openAt: string;
+  closeAt: string;
+  openEnrollAt: string;
+  closeEnrollAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface User {
+  id: number;
+  fullname: string;
+  password?: string;
+  cccd: string;
+  birthday: string;
+  gender: number;
+  email: string;
+  phone: string;
+  student_id?: string | null;
+  is_cccd_verified?: boolean;
+  is_email_verified?: boolean;
+  is_confirmed?: boolean;
+  token?: string;
+  refresh_token?: string;
+  token_expires_at?: string;
+  last_login?: string;
+  is_active?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ExamTicket {
+  id: number;
+  code: string;
+  firstname: string;
+  lastname: string;
+  cccd: string;
+  birthday: string;
+  subject: string;
+  turn: number;
+  time: string;
+  date: string;
+  room: string;
+  seat: string;
+  createdAt?: string;
+  updatedAt?: string;
+  examId: number;
+  exam: Exam;
+  user: User;
+  examName: string;
+}
+
+export interface ApiResponse<T = any> {
+  data?: T;
+  message?: string;
+  success?: boolean;
+  [key: string]: any;
+}
+
 export const getExams = async () => {
   try {
     const response = await api.get('/exams');
@@ -193,7 +258,7 @@ export const deleteExamTurn = async (id: string|number) => {
   }
 };
 
-export const getExamTicketsByUserAndExam = async (cccd: string) => {
+export const getExamTicketsByUserAndExam = async (cccd: string): Promise<ApiResponse<ExamTicket[]>> => {
   try {
     const response = await api.get(`/exam/${cccd}/ticket`);
     return response.data;
