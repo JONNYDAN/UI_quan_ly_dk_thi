@@ -320,7 +320,7 @@ export function ExamPaperView() {
     }
   }, []);
 
-  const goToLogin = () => navigate('/login');
+  const goToLogin = () => navigate('/sign-in');
 
   const fetchExamTickets = async () => {
     try {

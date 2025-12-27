@@ -382,7 +382,7 @@ export function ExamInfoView() {
   const isTablet = isMd;
   const isDesktop = isLg;
 
-  const goToLogin = useCallback(() => navigate('/login'), [navigate]);
+  const goToLogin = useCallback(() => navigate('/sign-in'), [navigate]);
 
   const fetchUserOrders = useCallback(async () => {
     try {

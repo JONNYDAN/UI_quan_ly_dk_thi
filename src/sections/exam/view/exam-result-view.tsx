@@ -201,7 +201,7 @@ export function ExamResultView() {
   // ----------------------------------------------------------------------
 
   const goToLogin = useCallback(() => {
-    navigate('/login');
+    navigate('/sign-in');
   }, [navigate]);
 
   const fetchExamData = useCallback(async () => {

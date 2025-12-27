@@ -230,7 +230,7 @@ export function OverviewAnalyticsView() {
 
       fetchUserData();
     } else {
-      navigate('/login');
+      navigate('/sign-in');
     }
   }, [isLoggedIn, navigate]);
 

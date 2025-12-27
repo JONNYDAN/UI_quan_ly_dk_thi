@@ -182,7 +182,7 @@ export function ExamView() {
 
   // Redirect to login if not logged in
   if (!isLoggedIn) {
-    navigate("/login");
+    navigate("/sign-in");
     return null;
   }
 
