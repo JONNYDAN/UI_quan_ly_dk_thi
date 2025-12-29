@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
 
-import {
-  Box,
-  Button,
-  Typography,
-  LinearProgress,
-  Chip,
-  Tabs,
-  Tab,
-  Alert,
-  Stack, 
-} from '@mui/material';
+import { Box, Button, Typography, Chip, Tabs, Tab, Alert, Stack } from '@mui/material';
 import {
   DescriptionOutlined,
   SchoolOutlined,
@@ -28,6 +18,7 @@ import KeyValue from './components/KeyValue';
 import InfoCard from './components/InfoCard';
 import CardPaper from './components/CardPaper';
 import IconAvatar from './components/IconAvatar';
+import ProgressBar from './components/ProgressBar';
 
 export interface Exam {
   id: string;
@@ -59,6 +50,42 @@ const ExamDetailModal: React.FC<ExamDetailModalProps> = ({ isOpen, onClose, exam
   const [activeTab, setActiveTab] = useState<string>('info');
 
   if (!isOpen || !exam) return null;
+
+  // Hàm kiểm tra điều kiện đăng ký
+  const checkRegistrationConditions = () => {
+    if (!exam.isOpen) {
+      return { canRegister: false, reason: 'Đăng ký chưa mở cho kỳ thi này' };
+    }
+
+    if (exam.registered >= exam.capacity) {
+      return { canRegister: false, reason: 'Số lượng đăng ký đã đầy. Không thể đăng ký thêm' };
+    }
+
+    // Kiểm tra deadline
+    const parseDate = (dateStr: string): Date => {
+      const parts = dateStr.split('/');
+      if (parts.length !== 3) return new Date();
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const year = parseInt(parts[2], 10);
+      return new Date(year, month, day);
+    };
+
+    const deadlineDate = parseDate(exam.deadline);
+    const currentDate = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate()
+    );
+
+    if (deadlineDate < currentDate) {
+      return { canRegister: false, reason: 'Đã quá hạn đăng ký' };
+    }
+
+    return { canRegister: true, reason: '' };
+  };
+
+  const registrationStatus = checkRegistrationConditions();
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue);
@@ -159,7 +186,7 @@ const ExamDetailModal: React.FC<ExamDetailModalProps> = ({ isOpen, onClose, exam
                 <InfoCard
                   icon={<LocalOfferOutlined />}
                   label="Lệ phí"
-                  value={exam.fee ? `${exam.fee} VND` : 'Miễn phí'}
+                  value={exam.fee ? `${exam.fee} VND` : 'Chưa cập nhật'}
                 />
               </Box>
 
@@ -169,22 +196,8 @@ const ExamDetailModal: React.FC<ExamDetailModalProps> = ({ isOpen, onClose, exam
                   label="Số lượng thí sinh"
                   value={seatsText()}
                   fullWidth
+                  progressValue={progressValue}
                 />
-                <Box sx={{ mt: 2 }}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={progressValue}
-                    sx={{
-                      height: 8,
-                      borderRadius: 4,
-                      bgcolor: 'grey.100',
-                      '& .MuiLinearProgress-bar': {
-                        borderRadius: 4,
-                        bgcolor: 'primary.main',
-                      },
-                    }}
-                  />
-                </Box>
               </Box>
             </Section>
           </Box>
@@ -195,39 +208,60 @@ const ExamDetailModal: React.FC<ExamDetailModalProps> = ({ isOpen, onClose, exam
     }
   };
 
-  const noticeElement = exam.notice ? (
-    <Alert
-      severity="warning"
-      icon={<WarningAmberOutlined />}
-      sx={{
-        borderRadius: 1,
-        borderLeft: 4,
-        borderLeftColor: 'warning.main',
-        bgcolor: 'warning.lighter',
-        display: 'flex',
-        alignItems: 'center',
-        '& .MuiAlert-icon': {
-          alignItems: 'center',
-          my: 'auto',
-        },
-        '& .MuiAlert-message': {
-          display: 'flex',
-          alignItems: 'center',
-          py: 0,
-          my: 'auto',
-        },
-      }}
-    >
-      <Typography
-        variant="body2"
-        sx={{
-          lineHeight: 'normal',
-        }}
-      >
-        Lưu ý: {exam.notice}
-      </Typography>
-    </Alert>
-  ) : null;
+  const handleRegisterClick = () => {
+    // KIỂM TRA CHÍNH - không thể bypass được
+    if (!registrationStatus.canRegister) {
+      window.alert(registrationStatus.reason);
+      return;
+    }
+
+    onClose();
+    onRegister();
+  };
+
+  const noticeElement = (
+    <Box>
+      {exam.notice && (
+        <Alert
+          severity="warning"
+          icon={<WarningAmberOutlined />}
+          sx={{
+            borderRadius: 1,
+            borderLeft: 4,
+            borderLeftColor: 'warning.main',
+            bgcolor: 'warning.lighter',
+            display: 'flex',
+            alignItems: 'center',
+            '& .MuiAlert-icon': {
+              alignItems: 'center',
+              my: 'auto',
+            },
+            '& .MuiAlert-message': {
+              display: 'flex',
+              alignItems: 'center',
+              py: 0,
+              my: 'auto',
+            },
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              lineHeight: 'normal',
+            }}
+          >
+            Lưu ý: {exam.notice}
+          </Typography>
+        </Alert>
+      )}
+
+      {!registrationStatus.canRegister && (
+        <Alert severity="error" sx={{ mt: exam.notice ? 2 : 0 }}>
+          {registrationStatus.reason}
+        </Alert>
+      )}
+    </Box>
+  );
 
   const tabNavigation = (
     <Tabs
@@ -244,7 +278,12 @@ const ExamDetailModal: React.FC<ExamDetailModalProps> = ({ isOpen, onClose, exam
   );
 
   const modalFooter = (
-    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} width="100%" justifyContent='flex-end'>
+    <Stack
+      direction={{ xs: 'column', sm: 'row' }}
+      spacing={2}
+      width="100%"
+      justifyContent="flex-end"
+    >
       <Button
         onClick={onClose}
         variant="outlined"
@@ -259,16 +298,16 @@ const ExamDetailModal: React.FC<ExamDetailModalProps> = ({ isOpen, onClose, exam
         Đóng
       </Button>
       <Button
-        onClick={() => {
-          onClose();
-          onRegister();
-        }}
-        disabled={!exam.isOpen}
+        onClick={handleRegisterClick}
+        disabled={!registrationStatus.canRegister}
         variant="contained"
         fullWidth
         sx={{
-          bgcolor: exam.isOpen ? 'primary.main' : 'grey.300',
-          '&:hover': { bgcolor: exam.isOpen ? 'primary.dark' : 'grey.300' },
+          bgcolor: registrationStatus.canRegister ? 'primary.main' : 'grey.300',
+          '&:hover': {
+            bgcolor: registrationStatus.canRegister ? 'primary.dark' : 'grey.300',
+            cursor: registrationStatus.canRegister ? 'pointer' : 'not-allowed',
+          },
           maxWidth: { md: 200 },
         }}
       >
@@ -282,7 +321,7 @@ const ExamDetailModal: React.FC<ExamDetailModalProps> = ({ isOpen, onClose, exam
       isOpen={isOpen}
       onClose={onClose}
       title={exam.title}
-      status={{ isOpen: exam.isOpen, label: exam.isOpen ? 'Đang mở đăng ký' : 'Sắp mở đăng ký' }}
+      status={{ isOpen: exam.isOpen, label: exam.isOpen ? 'Đang mở đăng ký' : 'Chưa mở đăng ký' }}
       headerContent={tabNavigation}
       footer={modalFooter}
       notice={noticeElement}

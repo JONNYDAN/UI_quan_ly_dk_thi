@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 import { Box, Button, Typography, Checkbox, FormControlLabel, Stack } from '@mui/material';
 
@@ -10,6 +10,10 @@ interface Exam {
   batch?: string;
   school?: string;
   dateRange?: { start?: string; end?: string };
+  isOpen?: boolean;
+  registered?: number;
+  capacity?: number;
+  deadline?: string;
 }
 
 interface ExamRegistrationModalProps {
@@ -17,6 +21,7 @@ interface ExamRegistrationModalProps {
   onClose: () => void;
   exam?: Exam | null;
   onSubmit?: () => void;
+  disabled?: boolean;
 }
 
 const ExamRegistrationModal: React.FC<ExamRegistrationModalProps> = ({
@@ -24,6 +29,7 @@ const ExamRegistrationModal: React.FC<ExamRegistrationModalProps> = ({
   onClose,
   exam,
   onSubmit,
+  disabled = false,
 }) => {
   const [formData, setFormData] = useState({
     examLevel: '',
@@ -34,6 +40,48 @@ const ExamRegistrationModal: React.FC<ExamRegistrationModalProps> = ({
   const [isAgreed, setIsAgreed] = useState(false);
 
   const isFormComplete = useMemo(() => Object.values(formData).every((v) => v !== ''), [formData]);
+
+  // Hàm kiểm tra điều kiện đăng ký
+  const checkRegistrationConditions = () => {
+    if (!exam) return { canRegister: false, reason: 'Không tìm thấy thông tin kỳ thi' };
+
+    if (!exam.isOpen) {
+      return { canRegister: false, reason: 'Đăng ký chưa mở cho kỳ thi này' };
+    }
+
+    if (exam.registered !== undefined && exam.capacity !== undefined) {
+      if (exam.registered >= exam.capacity) {
+        return { canRegister: false, reason: 'Số lượng đăng ký đã đầy. Không thể đăng ký thêm' };
+      }
+    }
+
+    // Kiểm tra deadline nếu có
+    if (exam.deadline) {
+      const parseDate = (dateStr: string): Date => {
+        const parts = dateStr.split('/');
+        if (parts.length !== 3) return new Date();
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+      };
+
+      const deadlineDate = parseDate(exam.deadline);
+      const currentDate = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate()
+      );
+
+      if (deadlineDate < currentDate) {
+        return { canRegister: false, reason: 'Đã quá hạn đăng ký' };
+      }
+    }
+
+    return { canRegister: true, reason: '' };
+  };
+
+  const registrationStatus = useMemo(() => checkRegistrationConditions(), [exam]);
 
   const examLevels = [{ value: 'hsk5', label: 'HSK 5 + HSKK: 1.900.000đ' }];
   const studyDurations = [
@@ -56,6 +104,19 @@ const ExamRegistrationModal: React.FC<ExamRegistrationModalProps> = ({
     { value: 'online', label: 'Học qua mạng' },
   ];
 
+  // Reset form khi modal đóng
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        examLevel: '',
+        studyDuration: '',
+        studyPurpose: '',
+        studyMethod: '',
+      });
+      setIsAgreed(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen || !exam) return null;
 
   const handleChange = (field: string, value: string) => {
@@ -63,7 +124,23 @@ const ExamRegistrationModal: React.FC<ExamRegistrationModalProps> = ({
   };
 
   const handleSubmit = () => {
-    if (!isFormComplete || !isAgreed) return;
+    // KIỂM TRA CHÍNH - không thể bypass được
+    const status = checkRegistrationConditions();
+    if (!status.canRegister) {
+      window.alert(status.reason);
+      return;
+    }
+
+    if (!isFormComplete) {
+      window.alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+      return;
+    }
+
+    if (!isAgreed) {
+      window.alert('Vui lòng đồng ý với các điều kiện đăng ký');
+      return;
+    }
+
     if (onSubmit) onSubmit();
     onClose();
   };

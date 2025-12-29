@@ -230,3 +230,211 @@ export const _productNames = (index: number) =>
     'Nike React Art3mis',
     'Nike React Infinity Run Flyknit A.I.R. Chaz Bear',
   ][index];
+
+
+// ----------------------------------------------------------------------
+// Mock data for exams
+// ----------------------------------------------------------------------
+
+export const _examTitles = (index: number) =>
+  [
+    'Kỳ thi TOEIC',
+    'Kỳ thi IELTS',
+    'Kỳ thi TOEFL',
+    'Kỳ thi VSTEP',
+    'Kỳ thi A2-B1-B2',
+    'Kỳ thi tiếng Anh đầu vào',
+    'Kỳ thi tiếng Anh đầu ra',
+    'Kỳ thi tiếng Nhật N5',
+    'Kỳ thi tiếng Nhật N4',
+    'Kỳ thi tiếng Nhật N3',
+    'Kỳ thi tiếng Hàn TOPIK I',
+    'Kỳ thi tiếng Hàn TOPIK II',
+  ][index];
+
+export const _examCodes = (index: number) =>
+  [
+    'TOEIC2024',
+    'IELTS2024',
+    'TOEFL2024',
+    'VSTEP2024',
+    'A2B1B22024',
+    'ENG_ENTRY2024',
+    'ENG_EXIT2024',
+    'JPN_N5_2024',
+    'JPN_N4_2024',
+    'JPN_N3_2024',
+    'KR_TOPIK1_2024',
+    'KR_TOPIK2_2024',
+  ][index];
+
+export const _examFees = (index: number) =>
+  [
+    '1.500.000',
+    '4.500.000',
+    '3.500.000',
+    '1.800.000',
+    '1.200.000',
+    '500.000',
+    '600.000',
+    '800.000',
+    '900.000',
+    '1.000.000',
+    '700.000',
+    '1.200.000',
+  ][index];
+
+export const _examDates = (index: number) =>
+  [
+    '16/12/2024',
+    '20/12/2024',
+    '25/12/2024',
+    '30/12/2024',
+    '05/01/2025',
+    '10/01/2025',
+    '15/01/2025',
+    '20/01/2025',
+    '25/01/2025',
+    '01/02/2025',
+    '05/02/2025',
+    '10/02/2026',
+  ][index];
+
+export const _examTimes = (index: number) =>
+  [
+    '13:00 - 16:00',
+    '08:00 - 11:00',
+    '14:00 - 17:00',
+    '07:30 - 10:30',
+    '09:00 - 12:00',
+    '15:00 - 18:00',
+    '10:00 - 12:00',
+    '13:30 - 16:30',
+    '08:30 - 11:30',
+    '14:30 - 17:30',
+    '07:00 - 10:00',
+    '16:00 - 19:00',
+  ][index];
+
+export const _examPlaces = (index: number) =>
+  [
+    'Hội đồng thi B - 124 Nguyễn Văn Cừ',
+    'Hội đồng thi A - 123 Lê Duẩn',
+    'Hội đồng thi C - 456 Cách Mạng Tháng 8',
+    'Hội đồng thi D - 789 Phạm Văn Đồng',
+    'Hội đồng thi E - 321 Nguyễn Thị Minh Khai',
+    'Hội đồng thi F - 654 Lý Tự Trọng',
+    'Hội đồng thi G - 987 Trường Chinh',
+    'Hội đồng thi H - 147 Võ Thị Sáu',
+    'Hội đồng thi I - 258 Phan Đình Phùng',
+    'Hội đồng thi J - 369 Hoàng Văn Thụ',
+    'Hội đồng thi K - 159 Nguyễn Huệ',
+    'Hội đồng thi L - 753 Lê Lợi',
+  ][index];
+
+export const _examDeadlines = (index: number) =>
+  [
+    '11/12/2024',
+    '15/12/2024',
+    '20/12/2024',
+    '25/12/2024',
+    '30/12/2024',
+    '04/01/2025',
+    '09/01/2025',
+    '14/01/2025',
+    '19/01/2025',
+    '24/01/2025',
+    '29/01/2025',
+    '03/02/2026',
+  ][index];
+
+export const _examDescriptions = (index: number) =>
+  [
+    'Kỳ thi đánh giá năng lực tiếng Anh giao tiếp quốc tế',
+    'Kỳ thi đánh giá năng lực tiếng Anh học thuật quốc tế',
+    'Kỳ thi đánh giá năng lực tiếng Anh như một ngoại ngữ',
+    'Kỳ thi đánh giá năng lực tiếng Anh theo Khung năng lực ngoại ngữ 6 bậc dùng cho Việt Nam',
+    'Kỳ thi đánh giá năng lực tiếng Anh bậc A2, B1, B2',
+    'Kỳ thi đánh giá năng lực tiếng Anh đầu vào cho sinh viên',
+    'Kỳ thi đánh giá năng lực tiếng Anh đầu ra cho sinh viên',
+    'Kỳ thi năng lực tiếng Nhật trình độ N5',
+    'Kỳ thi năng lực tiếng Nhật trình độ N4',
+    'Kỳ thi năng lực tiếng Nhật trình độ N3',
+    'Kỳ thi năng lực tiếng Hàn TOPIK I',
+    'Kỳ thi năng lực tiếng Hàn TOPIK II',
+  ][index];
+
+export const _examRequirements = (index: number) =>
+  [
+    'CMND/CCCD bản gốc, ảnh 3x4',
+    'CMND/CCCD bản gốc, ảnh 4x6',
+    'Hộ chiếu, ảnh 3x4',
+    'CMND/CCCD bản gốc, ảnh 3x4, phiếu đăng ký',
+    'CMND/CCCD bản gốc, ảnh 3x4, bảng điểm',
+    'CMND/CCCD bản gốc, ảnh 3x4, thẻ sinh viên',
+    'CMND/CCCD bản gốc, ảnh 3x4, giấy chứng nhận',
+    'CMND/CCCD bản gốc, ảnh 3x4, đơn đăng ký',
+    'CMND/CCCD bản gốc, ảnh 3x4, hồ sơ đăng ký',
+    'CMND/CCCD bản gốc, ảnh 3x4, phiếu dự thi',
+    'CMND/CCCD bản gốc, ảnh 3x4, hộ chiếu',
+    'CMND/CCCD bản gốc, ảnh 3x4, chứng minh nhân dân',
+  ][index];
+
+export const _examSchools = (index: number) =>
+  [
+    'Trường THCS Quang Trung',
+    'Trường THPT Nguyễn Du',
+    'Trường Đại học Bách Khoa',
+    'Trường Đại học Khoa học Tự nhiên',
+    'Trường Đại học Kinh tế',
+    'Trường Đại học Ngoại ngữ',
+    'Trường Đại học Công nghệ Thông tin',
+    'Trường Đại học Sư phạm',
+    'Trường Đại học Y Dược',
+    'Trường Đại học Kiến trúc',
+    'Trường Đại học Luật',
+    'Trường Đại học Tôn Đức Thắng',
+  ][index];
+
+export const _examBatches = (index: number) =>
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'][index];
+
+export const _examSessions = (index: number) =>
+  ['Sáng', 'Chiều', 'Tối'][index % 3];
+
+export const _examSubjects = (index: number) =>
+  [
+    'TOEIC Listening & Reading',
+    'IELTS Academic',
+    'TOEFL iBT',
+    'VSTEP Listening, Reading, Writing, Speaking',
+    'A2-B1-B2 Listening, Reading, Writing, Speaking',
+    'Tiếng Anh tổng quát',
+    'Tiếng Anh chuyên ngành',
+    'Tiếng Nhật N5',
+    'Tiếng Nhật N4',
+    'Tiếng Nhật N3',
+    'Tiếng Hàn TOPIK I',
+    'Tiếng Hàn TOPIK II',
+  ][index];
+
+export const _examNotices = (index: number) =>
+  [
+    'Vui lòng mang CMND/CCCD bản gốc và đến trước giờ thi 30 phút',
+    'Vui lòng mang hộ chiếu và đến trước giờ thi 45 phút',
+    'Vui lòng mang thẻ dự thi và đến trước giờ thi 60 phút',
+    'Vui lòng mang theo phiếu đăng ký và đến trước giờ thi 30 phút',
+    'Vui lòng mang theo bút chì 2B và tẩy',
+    'Vui lòng không mang tài liệu vào phòng thi',
+    'Vui lòng tắt điện thoại di động khi vào phòng thi',
+    'Vui lòng mang theo máy tính cầm tay được cho phép',
+    'Vui lòng mang theo nước uống trong chai trong suốt',
+    'Vui lòng mang theo đồng hồ đeo tay (không thông minh)',
+    'Vui lòng tuân thủ các quy định của hội đồng thi',
+    'Vui lòng kiểm tra thông tin cá nhân trên phiếu dự thi',
+  ][index];
+
+// Helper functions
+export const _examCapacity = () => Math.floor(Math.random() * 200) + 100; // 100-300
+export const _examRegistered = (capacity: number) => Math.floor(Math.random() * capacity);
+export const _examIsOpen = (index: number) => index % 3 !== 0; // 2/3 mở, 1/3 đóng

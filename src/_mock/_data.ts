@@ -9,6 +9,24 @@ import {
   _postTitles,
   _description,
   _productNames,
+
+  _examTitles,
+  _examCodes,
+  _examFees,
+  _examDates,
+  _examTimes,
+  _examPlaces,
+  _examDeadlines,
+  _examDescriptions,
+  _examRequirements,
+  _examSchools,
+  _examBatches,
+  _examSessions,
+  _examSubjects,
+  _examNotices,
+  _examCapacity,
+  _examRegistered,
+  _examIsOpen,
 } from './_mock';
 
 // ----------------------------------------------------------------------
@@ -27,7 +45,7 @@ export const _users = [...Array(24)].map((_, index) => ({
   company: _company(index),
   isVerified: _boolean(index),
   avatarUrl: `/assets/images/avatar/avatar-${index + 1}.webp`,
-  status: index % 4 ? 'active' : 'banned',
+  status: index % 4 ? 'Đã thanh toán' : 'Chưa thanh toán',
   role:
     [
       'Leader',
@@ -208,3 +226,39 @@ export const _notifications = [
     isUnRead: false,
   },
 ];
+
+// ----------------------------------------------------------------------
+
+export const _exams = [...Array(12)].map((_, index) => {
+  const capacity = _examCapacity();
+  const registered = _examRegistered(capacity);
+  
+  return {
+    id: _id(index),
+    title: _examTitles(index),
+    code: _examCodes(index),
+    fee: _examFees(index),
+    date: _examDates(index),
+    time: _examTimes(index),
+    place: _examPlaces(index),
+    registered: registered,
+    capacity: capacity,
+    deadline: _examDeadlines(index),
+    description: _examDescriptions(index),
+    requirement: _examRequirements(index),
+    isOpen: _examIsOpen(index),
+    batch: _examBatches(index),
+    school: _examSchools(index),
+    dateRange: {
+      start: _examDates(index),
+      end: _examDates((index + 1) % 12), // Ngày kết thúc khác
+    },
+    examSession: _examSessions(index),
+    examDate: _examDates(index),
+    examTime: _examTimes(index).split(' - ')[0], // Lấy thời gian bắt đầu
+    subject: _examSubjects(index),
+    notice: _examNotices(index),
+  };
+});
+
+// ----------------------------------------------------------------------

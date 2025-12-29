@@ -33,6 +33,21 @@ export const navData = [
   //   ),
   // },
   {
+    title: 'Thông tin thí sinh',
+    path: '/student-info',
+    icon: icon('ic--baseline-account-circle'),
+  },
+  {
+    title: 'Kỳ thi sắp diễn ra',
+    path: '/upcoming-exams',
+    icon: icon('ic--baseline-event'),
+  },
+  {
+    title: 'Kỳ thi đã đăng ký',
+    path: '/registered-exams',
+    icon: icon('ic--baseline-checklist'),
+  },
+  {
     title: 'Lịch xét tuyển',
     path: '/blog',
     icon: icon('ic--baseline-domain-verification'),

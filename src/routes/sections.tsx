@@ -24,7 +24,9 @@ export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const PortalPage = lazy(() => import('src/pages/portal'));
 export const PhoneOtpPage = lazy(() => import('src/pages/phone-otp'));
 export const RegisterDgnlPage = lazy(() => import('src/pages/register-dgnl'));
+export const StudentInfoPage = lazy(() => import('src/pages/student-info'));
 export const UpcomingExamsPage = lazy(() => import('src/pages/upcoming-exams'));
+export const RegisteredExamsPage = lazy(() => import('src/pages/registered-exams'));
 export const HomePage = lazy(() => import('src/pages/home'));
 export const SearchPage = lazy(() => import('src/pages/search'));
 
@@ -89,7 +91,9 @@ export const routesSection: RouteObject[] = [
       { path: 'products', element: <ProductsPage /> },
       { path: 'blog', element: <BlogPage /> },
       { path: 'profile', element: <ProfilePage /> },
+      { path: 'student-info', element: <StudentInfoPage /> },
       { path: 'upcoming-exams', element: <UpcomingExamsPage /> },
+      { path: 'registered-exams', element: <RegisteredExamsPage /> },
 
       // Admin pages (migrated)
       { path: 'admin/board', element: <BoardAdminPage /> },

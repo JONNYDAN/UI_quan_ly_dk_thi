@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import { useState, ReactNode } from 'react';
+import { useState, useCallback, ReactNode } from 'react';
 
 import {
   Box,
@@ -12,35 +12,13 @@ import {
   CardContent
 } from '@mui/material';
 
+import { Exam } from './view';
 import PaymentModal from './payment-modal';
 import DetailItem from './components/DetailItem';
 import ProgressBar from './components/ProgressBar';
 import ExamRegistrationModal from './exam-registration-modal';
 import ExamDetailModal, { Exam as ExamDetail } from './exam-detail-modal';
 
-// Interfaces
-interface Exam {
-  title: string;
-  code: string;
-  fee: string;
-  date: string;
-  time: string;
-  place: string;
-  registered: number;
-  capacity: number;
-  deadline: string;
-  description: string;
-  requirement: string;
-  isOpen: boolean;
-  batch: string;
-  school: string;
-  dateRange: { start: string; end: string };
-  examSession: string;
-  examDate: string;
-  examTime: string;
-  subject: string;
-  notice: string;
-}
 
 interface ExamCardProps {
   exam: Exam;
@@ -81,7 +59,7 @@ const styles = {
   },
   fee: {
     lineHeight: 'normal',
-    color: 'primary.main',
+    color: 'text.primary',
     fontWeight: 600,
     whiteSpace: 'nowrap' as const,
     fontSize: {
@@ -191,6 +169,24 @@ export default function ExamCard({ exam, onOpenDetail }: ExamCardProps) {
   
   const progressValue = Math.min(100, (exam.registered / exam.capacity) * 100);
   const isExamOpen = exam.isOpen;
+  const isFull = exam.registered >= exam.capacity;
+
+  // Đảm bảo ràng buộc nút đăng ký
+  const canRegister = isExamOpen && !isFull;
+
+  // Sử dụng useCallback để đảm bảo hàm không bị tạo lại
+  const handleRegisterClick = useCallback(() => {
+    // Kiểm tra lại điều kiện trong hàm xử lý click
+    if (!canRegister) {
+      if (!isExamOpen) {
+        window.alert('Đăng ký chưa mở cho kỳ thi này.');
+      } else if (isFull) {
+        window.alert('Số lượng đăng ký đã đầy. Không thể đăng ký thêm.');
+      }
+      return;
+    }
+    setIsRegisterModalOpen(true);
+  }, [canRegister, isExamOpen, isFull]);
 
   const detailExam: ExamDetail = {
     id: exam.code,
@@ -212,10 +208,10 @@ export default function ExamCard({ exam, onOpenDetail }: ExamCardProps) {
 
   // Button variant styles
   const getButtonStyles = () => ({
-    bgcolor: isExamOpen ? 'primary.main' : 'grey.300',
-    color: isExamOpen ? 'common.white' : 'grey.600',
+    bgcolor: isExamOpen && !isFull ? 'primary.main' : 'grey.300',
+    color: isExamOpen && !isFull ? 'common.white' : 'grey.600',
     '&:hover': { 
-      bgcolor: isExamOpen ? 'primary.dark' : 'grey.400' 
+      bgcolor: isExamOpen && !isFull ? 'primary.dark' : 'grey.400' 
     },
     '&.Mui-disabled': { 
       bgcolor: 'grey.300', 
@@ -279,7 +275,7 @@ export default function ExamCard({ exam, onOpenDetail }: ExamCardProps) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            pt: { xs: 1.5, sm: 1.75, md: 1.5, lg: 1.75, xl: 2 },
+            // pt: { xs: 1.5, sm: 1.75, md: 1.5, lg: 1.75, xl: 2 },
             borderTop: '1px solid',
             borderColor: 'grey.100'
           }}>
@@ -319,14 +315,14 @@ export default function ExamCard({ exam, onOpenDetail }: ExamCardProps) {
               {/* Register Button */}
               <Button
                 variant="contained"
-                disabled={!isExamOpen}
-                onClick={() => setIsRegisterModalOpen(true)}
+                disabled={!canRegister}
+                onClick={handleRegisterClick}
                 sx={{
                   ...styles.actionButton,
                   ...getButtonStyles()
                 }}
               >
-                {isExamOpen ? "Đăng ký" : "Chưa mở"}
+                Đăng ký
               </Button>
             </Box>
           </Box>
@@ -339,7 +335,18 @@ export default function ExamCard({ exam, onOpenDetail }: ExamCardProps) {
           isOpen={isDetailModalOpen}
           onClose={() => setIsDetailModalOpen(false)}
           exam={isDetailModalOpen ? detailExam : null}
-          onRegister={() => setIsRegisterModalOpen(true)}
+          onRegister={() => {
+            // Kiểm tra lại khi mở modal đăng ký từ detail modal
+            if (!canRegister) {
+              if (!isExamOpen) {
+                window.alert('Đăng ký chưa mở cho kỳ thi này.');
+              } else if (isFull) {
+                window.alert('Số lượng đăng ký đã đầy. Không thể đăng ký thêm.');
+              }
+              return;
+            }
+            setIsRegisterModalOpen(true);
+          }}
         />
       )}
 
@@ -351,6 +358,7 @@ export default function ExamCard({ exam, onOpenDetail }: ExamCardProps) {
           setIsRegisterModalOpen(false);
           setShowPaymentModal(true);
         }}
+        disabled={!canRegister}
       />
 
       <PaymentModal
