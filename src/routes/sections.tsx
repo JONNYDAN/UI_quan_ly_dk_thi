@@ -14,46 +14,27 @@ import { AuthLayout, BackgroundLayout } from 'src/layouts/auth';
 // ----------------------------------------------------------------------
 
 export const DashboardPage = lazy(() => import('src/pages/dashboard'));
-export const BlogPage = lazy(() => import('src/pages/blog'));
-export const UserPage = lazy(() => import('src/pages/user'));
+// export const BlogPage = lazy(() => import('src/pages/blog'));
+// export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const SignUpPage = lazy(() => import('src/pages/sign-up'));
-export const ProductsPage = lazy(() => import('src/pages/products'));
+// export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const PortalPage = lazy(() => import('src/pages/portal'));
-export const PhoneOtpPage = lazy(() => import('src/pages/phone-otp'));
-export const RegisterDgnlPage = lazy(() => import('src/pages/register-dgnl'));
 export const StudentInfoPage = lazy(() => import('src/pages/student-info'));
 export const UpcomingExamsPage = lazy(() => import('src/pages/upcoming-exams'));
 export const RegisteredExamsPage = lazy(() => import('src/pages/registered-exams'));
-export const HomePage = lazy(() => import('src/pages/home'));
+// export const PhoneOtpPage = lazy(() => import('src/pages/phone-otp'));
 export const SearchPage = lazy(() => import('src/pages/search'));
 
-// Additional auth pages migrated from xettuyen
-export const LoginAdminPage = lazy(() => import('src/sections/auth/login-admin-view'));
-export const ComingSoonPage = lazy(() => import('src/sections/auth/coming-soon-view'));
+export const ExamPage = lazy(() => import('src/pages/exam'));
+export const ExamInfoPage = lazy(() => import('src/pages/exam-info'));
+export const ExamPaperPage = lazy(() => import('src/pages/exam-paper'));
+export const ExamResultPage = lazy(() => import('src/pages/exam-result'));
 
-// Migrated pages from xettuyen2025_frontend
-export const BoardAdminPage = lazy(() => import('src/sections/admin/view/board-admin-view'));
-export const BoardModeratorPage = lazy(() => import('src/sections/admin/view/board-moderator-view'));
-export const BoardUserPage = lazy(() => import('src/sections/admin/view/board-user-view'));
-export const DashboardExamPage = lazy(() => import('src/sections/admin/view/dashboard-exam-view'));
-export const UserManagementPage = lazy(() => import('src/sections/admin/view/user-management-view'));
-export const ExamManagementPage = lazy(() => import('src/sections/admin/view/exam-management-view'));
-export const ExamTurnManagementPage = lazy(() => import('src/sections/admin/view/exam-turn-management-view'));
-export const ExamPayManagementPage = lazy(() => import('src/sections/admin/view/exam-pay-management-view'));
-
-export const PaymentDetailPage = lazy(() => import('src/sections/payment/view/payment-detail-view'));
-export const PaymentReturnPage = lazy(() => import('src/sections/payment/view/payment-return-view'));
-
-export const EnrollmentPage = lazy(() => import('src/sections/exam/view/enrollment-view'));
-export const EnrollmentNNPage = lazy(() => import('src/sections/exam/view/enrollment-nn-view'));
-export const ExamInfoPage = lazy(() => import('src/sections/exam/view/exam-info-view'));
-export const ExamPaperPage = lazy(() => import('src/sections/exam/view/exam-paper-view'));
-export const ExamResultPage = lazy(() => import('src/sections/exam/view/exam-result-view'));
-export const ReExamRegisterPage = lazy(() => import('src/sections/exam/view/reexam-register-view'));
-export const ReExamInfoPage = lazy(() => import('src/sections/exam/view/reexam-info-view'));
+export const PaymentDetailPage = lazy(() => import('src/pages/payment'));
+export const PaymentReturnPage = lazy(() => import('src/pages/payment'));
 
 
 const renderFallback = () => (
@@ -86,38 +67,21 @@ export const routesSection: RouteObject[] = [
       </DashboardLayout>
     ),
     children: [
-      { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'user', element: <UserPage /> },
-      { path: 'products', element: <ProductsPage /> },
-      { path: 'blog', element: <BlogPage /> },
-      { path: 'profile', element: <ProfilePage /> },
       { path: 'student-info', element: <StudentInfoPage /> },
       { path: 'upcoming-exams', element: <UpcomingExamsPage /> },
       { path: 'registered-exams', element: <RegisteredExamsPage /> },
+      { path: 'profile', element: <DashboardPage /> },
 
-      // Admin pages (migrated)
-      { path: 'admin/board', element: <BoardAdminPage /> },
-      { path: 'admin/moderator', element: <BoardModeratorPage /> },
-      { path: 'admin/user', element: <BoardUserPage /> },
-      { path: 'admin/exams', element: <DashboardExamPage /> },
-      { path: 'admin/users', element: <UserManagementPage /> },
-      { path: 'admin/exam-management', element: <ExamManagementPage /> },
-      { path: 'admin/exam-turns', element: <ExamTurnManagementPage /> },
-      { path: 'admin/exam-payments', element: <ExamPayManagementPage /> },
+      // Exam 
+      { path: 'exam', element: <ExamPage/> },
+      { path: 'exam-info', element: <ExamInfoPage/> },
+      { path: 'exam-paper', element: <ExamPaperPage/> },
+      { path: 'result', element: <ExamResultPage/> },
 
       // Payment pages
-      { path: 'payment/:orderCode', element: <PaymentDetailPage /> },
+      { path: 'payment/:type/:orderCode', element: <PaymentDetailPage /> },
       { path: 'payment-return', element: <PaymentReturnPage /> },
-
-      // Exam / Enrollment
-      { path: 'exam/enrollment', element: <EnrollmentPage /> },
-      { path: 'exam/enrollment-nn', element: <EnrollmentNNPage /> },
-      { path: 'exam/info', element: <ExamInfoPage /> },
-      { path: 'exam/paper', element: <ExamPaperPage /> },
-      { path: 'exam/results', element: <ExamResultPage /> },
-      { path: 'exam/re-register', element: <ReExamRegisterPage /> },
-      { path: 'exam/re-info', element: <ReExamInfoPage /> },
-
+ 
     ],
   },
   {
@@ -136,51 +100,19 @@ export const routesSection: RouteObject[] = [
       </AuthLayout>
     ),
   },
-  {
-    path: 'admin/sign-in',
-    element: (
-      <AuthLayout>
-        <LoginAdminPage />
-      </AuthLayout>
-    ),
-  },
-  {
-    path: 'phone-otp',
-    element: (
-      <AuthLayout>
-        <PhoneOtpPage />
-      </AuthLayout>
-    ),
-  },
-  {
-    path: 'register-dgnl',
-    element: (
-      <DashboardLayout>
-        <RegisterDgnlPage />
-      </DashboardLayout>
-    )
-  },
+  // {
+  //   path: 'phone-otp',
+  //   element: (
+  //     <AuthLayout>
+  //       <PhoneOtpPage />
+  //     </AuthLayout>
+  //   ),
+  // },
   {
     path: '/',
     element: (
       <BackgroundLayout>
         <PortalPage />
-      </BackgroundLayout>
-    )
-  },
-  {
-    path: 'home',
-    element: (
-      <BackgroundLayout>
-        <HomePage />
-      </BackgroundLayout>
-    )
-  },
-  {
-    path: 'coming-soon',
-    element: (
-      <BackgroundLayout>
-        <ComingSoonPage />
       </BackgroundLayout>
     )
   },

@@ -25,7 +25,7 @@
     /* Vite Support */
     "types": ["vite/client"]  
   },
-  "include": ["src", "src/vite-env.d.ts"],  
+  "include": ["src", "src/vite-env.d.ts", "src/store/index.tsx"],  
   "exclude": ["node_modules"],
   "references": [
     {

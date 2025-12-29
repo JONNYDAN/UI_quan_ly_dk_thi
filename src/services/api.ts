@@ -10,7 +10,8 @@ const api = axios.create({
 // Attach Authorization header from AuthContext/localStorage automatically
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    // Support multiple token keys: primary 'accessToken' set by AuthContext; fallback to legacy 'authToken'
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
